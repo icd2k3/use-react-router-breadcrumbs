@@ -1,0 +1,56 @@
+# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Node.js CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [12.16.1]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: yarn install
+      uses: borales/actions-yarn@v2.1.0
+      with:
+        cmd: install
+    - name: yarn build
+      uses: borales/actions-yarn@v2.1.0
+      with:
+        cmd: build
+    - name: yarn lint
+      uses: borales/actions-yarn@v2.1.0
+      with:
+        cmd: lint
+    - name: yarn types
+      uses: borales/actions-yarn@v2.1.0
+      with:
+        cmd: types
+    - name: yarn test
+      uses: borales/actions-yarn@v2.1.0
+      with:
+        cmd: test
+    - name: yarn test-build
+      uses: borales/actions-yarn@v2.1.0
+      with:
+        cmd: test-build
+    - name: Coveralls
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+      env:
+        CI: true
