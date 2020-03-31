@@ -15,8 +15,8 @@
   <a href='https://coveralls.io/github/icd2k3/use-react-router-breadcrumbs?branch=master'><img src='https://coveralls.io/repos/github/icd2k3/use-react-router-breadcrumbs/badge.svg?branch=master' alt='Coverage Status' /></a>
 </p>
 
-**Important**
-This package only works with `react-router` 5.1 and up. If you need a (very) similar solution for an earlier version, check out [react-router-breadcrumbs-hoc](https://github.com/icd2k3/react-router-breadcrumbs-hoc)
+> **Important**
+> This package only works with `react-router` 5.1 and up. If you need a (very) similar solution for an earlier version, check out [react-router-breadcrumbs-hoc](https://github.com/icd2k3/react-router-breadcrumbs-hoc)
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
