@@ -1,10 +1,6 @@
-// Type definitions for react-router-breadcrumbs-hoc 2.1
-// Project: https://github.com/icd2k3/react-router-breadcrumbs-hoc
-// Definitions by: 9renpoto <https://github.com/9renpoto>
-// Definitions: https://github.com/icd2k3/react-router-breadcrumbs-hoc
-
-import * as React from "react";
-import { Omit, RouteComponentProps } from "react-router";
+/* eslint-disable no-unused-vars */
+// Type definitions for use-react-router-breadcrumbs
+import { RouteComponentProps } from 'react-router';
 
 export interface Options {
   currentSection?: string;

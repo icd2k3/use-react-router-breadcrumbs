@@ -1,10 +1,12 @@
-import * as React from "react";
-import { RouteComponentProps } from "react-router";
-import { NavLink } from "react-router-dom";
+/* eslint-disable import/no-unresolved */
+/* eslint-disable no-unused-vars */
+import * as React from 'react';
+import { RouteComponentProps } from 'react-router';
+import { NavLink } from 'react-router-dom';
 import useBreadcrumbs, {
   BreadcrumbsRoute,
-  BreadcrumbsProps
-} from "use-react-router-breadcrumbs";
+  BreadcrumbsProps,
+} from 'use-react-router-breadcrumbs';
 
 interface UserBreadcrumbProps
   extends RouteComponentProps<{
@@ -16,11 +18,11 @@ const UserBreadcrumb = ({ match }: UserBreadcrumbProps) => (
 );
 
 const routes: BreadcrumbsRoute[] = [
-  { path: "/users/:userId", breadcrumb: UserBreadcrumb },
-  { path: "/example", breadcrumb: "Custom Example" },
+  { path: '/users/:userId', breadcrumb: UserBreadcrumb },
+  { path: '/example', breadcrumb: 'Custom Example' },
   {
-    path: "/test-match-options",
-    breadcrumb: "Match Options",
+    path: '/test-match-options',
+    breadcrumb: 'Match Options',
     matchOptions: { exact: true, strict: true },
   },
 ];
