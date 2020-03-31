@@ -244,10 +244,16 @@ const flattenRoutes = (routes: types.BreadcrumbsRoute[]) => (routes)
     return arr.concat(route);
   }, [] as types.BreadcrumbsRoute[]);
 
-const useReactRouterBreadcrumbs = (routeConfig, options) => getBreadcrumbs({
-  routes: flattenRoutes(routeConfig || []),
+/**
+ * Default hook function export.
+ */
+const useReactRouterBreadcrumbs = (
+  routes?: types.BreadcrumbsRoute[],
+  options?: types.Options,
+) => getBreadcrumbs({
+  routes: flattenRoutes(routes || []),
   location: useLocation(),
-  options
+  options,
 });
 
 export default useReactRouterBreadcrumbs;

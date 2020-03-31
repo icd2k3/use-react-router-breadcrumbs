@@ -33,7 +33,7 @@ const components = {
           ))}
         </div>
       </h1>
-    )
+    );
   },
   BreadcrumbMatchTest: ({ match }) => <span>{match.params.number}</span>,
   BreadcrumbNavLinkTest: ({ match }) => <NavLink to={match.url}>Link</NavLink>,
@@ -114,11 +114,20 @@ const matchShape = {
 };
 
 components.Breadcrumbs.propTypes = {
-  breadcrumbs: PropTypes.arrayOf(PropTypes.shape({
-    breadcrumb: PropTypes.node.isRequired,
-    match: PropTypes.shape().isRequired,
-    location: PropTypes.shape.isRequired,
-  })).isRequired,
+  useBreadcrumbs: PropTypes.func.isRequired,
+  options: PropTypes.shape({
+    excludePaths: PropTypes.arrayOf(PropTypes.string),
+    disableDefaults: PropTypes.bool,
+  }),
+  routes: PropTypes.arrayOf(PropTypes.shape({
+    path: PropTypes.string.isRequired,
+    breadcrumb: PropTypes.node,
+  })),
+};
+
+components.Breadcrumbs.defaultProps = {
+  routes: null,
+  options: null,
 };
 
 components.BreadcrumbMatchTest.propTypes = {

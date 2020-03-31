@@ -34,15 +34,7 @@ export interface BreadcrumbsProps<T = {}> extends RouteComponentProps<T> {
   breadcrumb: React.ComponentType | string;
 }
 
-export interface InjectedProps<P = {}> extends RouteComponentProps<P> {
-  breadcrumbs: BreadcrumbsProps<P>[];
-}
-
-export type withRouter<P extends InjectedProps<any>> = (component: React.ComponentType<P>) => React.ComponentClass<
-  Omit<P, keyof InjectedProps<any>>
->;
-
-export default function withBreadcrumbs<P>(
+export default function useBreadcrumbs<P>(
   routes?: BreadcrumbsRoute[],
   options?: Options
-): withRouter<InjectedProps<P>>;
+): Array<React.ReactNode | string>;

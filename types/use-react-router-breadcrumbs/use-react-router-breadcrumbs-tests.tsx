@@ -1,11 +1,10 @@
 import * as React from "react";
 import { RouteComponentProps } from "react-router";
 import { NavLink } from "react-router-dom";
-import withBreadcrumbs, {
+import useBreadcrumbs, {
   BreadcrumbsRoute,
-  BreadcrumbsProps,
-  InjectedProps
-} from "react-router-breadcrumbs-hoc";
+  BreadcrumbsProps
+} from "use-react-router-breadcrumbs";
 
 interface UserBreadcrumbProps
   extends RouteComponentProps<{
@@ -26,15 +25,19 @@ const routes: BreadcrumbsRoute[] = [
   },
 ];
 
-const Breadcrumbs = ({ breadcrumbs }: InjectedProps) => (
-  <div>
-    {breadcrumbs.map(({ breadcrumb, match }: BreadcrumbsProps, index: number) => (
-      <span key={match.url}>
-        <NavLink to={match.url}>{breadcrumb}</NavLink>
-        {index < breadcrumbs.length - 1 && <i> / </i>}
-      </span>
-    ))}
-  </div>
-);
+const Breadcrumbs = () => {
+  const breadcrumbs = useBreadcrumbs(routes);
 
-export default withBreadcrumbs(routes)(Breadcrumbs);
+  return (
+    <div>
+      {breadcrumbs.map(({ breadcrumb, match }: BreadcrumbsProps, index: number) => (
+        <span key={match.url}>
+          <NavLink to={match.url}>{breadcrumb}</NavLink>
+          {index < breadcrumbs.length - 1 && <i> / </i>}
+        </span>
+      ))}
+    </div>
+  );
+};
+
+export default Breadcrumbs;
