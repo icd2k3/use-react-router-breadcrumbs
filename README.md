@@ -21,12 +21,13 @@ This package only works with `react-router` 5.1 and up. If you need a (very) sim
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 - [Description](#description)
+    - [Features](#features)
 - [Install](#install)
 - [Usage](#usage)
 - [Examples](#examples)
   - [Simple](#simple)
   - [Advanced](#advanced)
-- [Route config compatible!](#route-config-compatible)
+- [Route config compatibility](#route-config-compatibility)
 - [Dynamic breadcrumb components](#dynamic-breadcrumb-components)
 - [Options](#options)
   - [Disabling default generated breadcrumbs](#disabling-default-generated-breadcrumbs)
@@ -122,7 +123,7 @@ Pathname | Result
 /users/1 | Home / Users / John
 /example | Home / Custom Example
 
-## [Route config](https://reacttraining.com/react-router/web/example/route-config) compatible!
+## [Route config](https://reacttraining.com/react-router/web/example/route-config) compatibility
 
 Add breadcrumbs to your existing [route config](https://reacttraining.com/react-router/web/example/route-config). This is a great way to keep all routing config paths in a single place! If a path ever changes, you'll only have to change it in your main route config rather than maintaining a _separate_ config for `use-react-router-breadcrumbs`.
 
