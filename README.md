@@ -3,21 +3,28 @@
 </h3>
 
 <p align="center">
-  A small (~1.6kb gzip), flexible, <a href="https://reactjs.org/docs/hooks-intro.html">hook</a> for rendering breadcrumbs with <a href="https://github.com/ReactTraining/react-router">react-router</a> (5.1 and up).
-</p>
-
-<p align="center">
-  site.com/user/id → Home / User / John Doe
-</p>
-
-<p align="center">
   <a href="https://github.com/icd2k3/use-react-router-breadcrumbs/actions" target="_blank"><img src="https://github.com/icd2k3/use-react-router-breadcrumbs/workflows/Node.js%20CI/badge.svg" /></a>
+  <a href="https://david-dm.org/icd2k3/use-react-router-breadcrumbs" title="dependencies status"><img src="https://david-dm.org/icd2k3/use-react-router-breadcrumbs/status.svg"/></a>
   <a href='https://coveralls.io/github/icd2k3/use-react-router-breadcrumbs?branch=master'><img src='https://coveralls.io/repos/github/icd2k3/use-react-router-breadcrumbs/badge.svg?branch=master' alt='Coverage Status' /></a>
 </p>
 
----
-> This package only works with `react-router` 5.1 and up. If you need a (very) similar solution for an earlier version, check out [react-router-breadcrumbs-hoc](https://github.com/icd2k3/react-router-breadcrumbs-hoc)
----
+<p align="center">
+  A small (~1.6kb gzip), flexible, <a href="https://reactjs.org/docs/hooks-intro.html">hook</a> for rendering breadcrumbs with <a href="https://github.com/ReactTraining/react-router">react-router</a> (5.1 and up).
+</p>
+
+<hr/>
+  <h4 align="center">
+    <code>
+      example.com/user/123 → Home / User / John Doe
+    </code>
+  </h4>
+<hr/>
+
+<p align="center">
+  <code>
+    This package only works with `react-router` 5.1 and up. If you need a (very) similar solution for an earlier version, check out <a href="https://github.com/icd2k3/react-router-breadcrumbs-hoc">react-router-breadcrumbs-hoc</a>
+  </code>
+</p>
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
