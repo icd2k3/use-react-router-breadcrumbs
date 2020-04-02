@@ -120,7 +120,7 @@ components.Breadcrumbs.propTypes = {
   }),
   routes: PropTypes.arrayOf(PropTypes.shape({
     path: PropTypes.string.isRequired,
-    breadcrumb: PropTypes.node,
+    breadcrumb: PropTypes.oneOfType([PropTypes.node, PropTypes.func, PropTypes.object]),
   })),
 };
 
