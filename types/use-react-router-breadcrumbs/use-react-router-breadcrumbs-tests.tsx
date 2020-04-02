@@ -33,7 +33,7 @@ const Breadcrumbs = () => {
     <div>
       {breadcrumbs.map(({ breadcrumb, match }: BreadcrumbsProps, index: number) => (
         <span key={match.url}>
-          <a to={match.url}>{breadcrumb}</a>
+          <a href={match.url}>{breadcrumb}</a>
           {index < breadcrumbs.length - 1 && <i> / </i>}
         </span>
       ))}
