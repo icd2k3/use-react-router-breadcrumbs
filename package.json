@@ -9,6 +9,7 @@
   "author": "Justin Schrader <me@justin.beer>",
   "license": "MIT",
   "private": false,
+  "types": "types/use-react-router-breadcrumbs/index.d.ts",
   "peerDependencies": {
     "react": ">=16.8",
     "react-router": ">=5.1.0"
