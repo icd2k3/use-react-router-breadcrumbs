@@ -39,7 +39,7 @@ export default exports.map((item) => ({
     exports: 'named',
     file: item.file,
     format: item.format,
-    name: 'react-router-breadcrumbs-hoc',
+    name: 'use-react-router-breadcrumbs',
     globals,
     sourcemap: true,
   },
