@@ -150,7 +150,7 @@ components.BreadcrumbExtraPropsTest.propTypes = {
   bar: PropTypes.string.isRequired,
 };
 
-describe('react-router-breadcrumbs-hoc', () => {
+describe('use-react-router-breadcrumbs', () => {
   describe('Valid routes', () => {
     it('Should render breadcrumb components as expected', () => {
       const routes = [

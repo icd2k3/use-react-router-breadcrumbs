@@ -1,6 +1,6 @@
 {
   "name": "use-react-router-breadcrumbs",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A hook for displaying and setting breadcrumbs for react router",
   "main": "dist/cjs/index.js",
   "module": "dist/es/index.js",
@@ -9,6 +9,7 @@
   "author": "Justin Schrader <me@justin.beer>",
   "license": "MIT",
   "private": false,
+  "types": "types/use-react-router-breadcrumbs/index.d.ts",
   "peerDependencies": {
     "react": ">=16.8",
     "react-router": ">=5.1.0"
