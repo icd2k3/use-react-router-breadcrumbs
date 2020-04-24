@@ -21,8 +21,34 @@
 import React, { createElement } from 'react';
 import { matchPath, useLocation } from 'react-router';
 
-// eslint-disable-next-line import/extensions, import/no-unresolved, no-unused-vars
-import * as types from '../types/use-react-router-breadcrumbs/index';
+type Location = ReturnType<typeof useLocation>;
+
+export interface Options {
+  currentSection?: string;
+  disableDefaults?: boolean;
+  excludePaths?: string[];
+  pathSection?: string;
+}
+
+export interface MatchOptions {
+  exact?: boolean;
+  strict?: boolean;
+  sensitive?: boolean;
+}
+
+export interface BreadcrumbsRoute {
+  path: string;
+  breadcrumb?: React.ComponentType | React.ElementType | string;
+  matchOptions?: MatchOptions;
+  routes?: BreadcrumbsRoute[];
+}
+
+export interface BreadcrumbData {
+  match: { url: string },
+  location: Location,
+  key: string,
+  breadcrumb: React.ReactNode
+}
 
 const DEFAULT_MATCH_OPTIONS = { exact: true };
 const NO_BREADCRUMB = 'NO_BREADCRUMB';
@@ -49,13 +75,8 @@ const render = ({
 }: {
   breadcrumb: React.ComponentType | string,
   match: { url: string },
-  location: types.Location
-}): {
-  match: { url: string },
-  location: types.Location,
-  key: string,
-  breadcrumb: React.ReactNode
-} => {
+  location: Location
+}): BreadcrumbData => {
   const componentProps = { match, location, key: match.url, ...rest };
 
   return {
@@ -75,7 +96,7 @@ const getDefaultBreadcrumb = ({
   pathSection,
 }: {
   currentSection: string,
-  location: types.Location,
+  location: Location,
   pathSection: string,
 }) => {
   const match = matchPath(pathSection, { ...DEFAULT_MATCH_OPTIONS, path: pathSection })
@@ -104,11 +125,11 @@ const getBreadcrumbMatch = ({
   currentSection: string,
   disableDefaults?: boolean,
   excludePaths?: string[],
-  location: { pathname: string },
+  location: Location,
   pathSection: string,
-  routes: types.BreadcrumbsRoute[]
+  routes: BreadcrumbsRoute[]
 }) => {
-  let breadcrumb;
+  let breadcrumb: BreadcrumbData | typeof NO_BREADCRUMB | undefined;
 
   // Check the optional `excludePaths` option in `options` to see if the
   // current path should not include a breadcrumb.
@@ -189,12 +210,12 @@ export const getBreadcrumbs = (
     location,
     options = {},
   }: {
-    routes: types.BreadcrumbsRoute[],
-    location: types.Location,
-    options?: types.Options
+    routes: BreadcrumbsRoute[],
+    location: Location,
+    options?: Options
   },
-): Array<React.ReactNode | string> => {
-  const matches:Array<React.ReactNode | string> = [];
+): Array<BreadcrumbData> => {
+  const matches: Array<BreadcrumbData> = [];
   const { pathname } = location;
 
   pathname
@@ -238,20 +259,20 @@ export const getBreadcrumbs = (
  * Takes a route array and recursively flattens it IF there are
  * nested routes in the config.
 */
-const flattenRoutes = (routes: types.BreadcrumbsRoute[]) => (routes)
-  .reduce((arr, route: types.BreadcrumbsRoute): types.BreadcrumbsRoute[] => {
+const flattenRoutes = (routes: BreadcrumbsRoute[]) => (routes)
+  .reduce((arr, route: BreadcrumbsRoute): BreadcrumbsRoute[] => {
     if (route.routes) {
       return arr.concat([route, ...flattenRoutes(route.routes)]);
     }
     return arr.concat(route);
-  }, [] as types.BreadcrumbsRoute[]);
+  }, [] as BreadcrumbsRoute[]);
 
 /**
  * Default hook function export.
  */
 const useReactRouterBreadcrumbs = (
-  routes?: types.BreadcrumbsRoute[],
-  options?: types.Options,
+  routes?: BreadcrumbsRoute[],
+  options?: Options,
 ) => getBreadcrumbs({
   routes: flattenRoutes(routes || []),
   location: useLocation(),
