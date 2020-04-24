@@ -8,9 +8,15 @@ import { MemoryRouter as Router } from 'react-router';
 import withBreadcrumbs, { getBreadcrumbs } from './index.tsx';
 
 // imports to test compiled builds
-import withBreadcrumbsCompiledES, { getBreadcrumbs as getBreadcrumbsCompiledES } from '../dist/es/index';
-import withBreadcrumbsCompiledUMD, { getBreadcrumbs as getBreadcrumbsCompiledUMD } from '../dist/umd/index';
-import withBreadcrumbsCompiledCJS, { getBreadcrumbs as getBreadcrumbsCompiledCJS } from '../dist/cjs/index';
+import withBreadcrumbsCompiledES, {
+  getBreadcrumbs as getBreadcrumbsCompiledES,
+} from '../dist/es/index';
+import withBreadcrumbsCompiledUMD, {
+  getBreadcrumbs as getBreadcrumbsCompiledUMD,
+} from '../dist/umd/index';
+import withBreadcrumbsCompiledCJS, {
+  getBreadcrumbs as getBreadcrumbsCompiledCJS,
+} from '../dist/cjs/index';
 
 const components = {
   Breadcrumbs: ({ useBreadcrumbs, options, routes, ...forwardedProps }) => {
@@ -19,15 +25,16 @@ const components = {
     return (
       <h1>
         <div className="forwarded-props">
-          {forwardedProps && Object.values(forwardedProps).filter((v) => typeof v === 'string').map((value) => (
-            <span key={value}>{value}</span>
-          ))}
+          {forwardedProps &&
+            Object.values(forwardedProps)
+              .filter((v) => typeof v === 'string')
+              .map((value) => <span key={value}>{value}</span>)}
         </div>
         <div className="breadcrumbs-container">
           {breadcrumbs.map(({ breadcrumb, key }, index) => (
             <span key={key}>
               {breadcrumb}
-              {(index < breadcrumbs.length - 1) && <i> / </i>}
+              {index < breadcrumbs.length - 1 && <i> / </i>}
             </span>
           ))}
         </div>
@@ -36,16 +43,23 @@ const components = {
   },
   BreadcrumbMatchTest: ({ match }) => <span>{match.params.number}</span>,
   BreadcrumbNavLinkTest: ({ match }) => <a to={match.url}>Link</a>,
-  BreadcrumbLocationTest: ({ location: { state: { isLocationTest } } }) => (
+  BreadcrumbLocationTest: ({
+    location: {
+      state: { isLocationTest },
+    },
+  }) => <span>{isLocationTest ? 'pass' : 'fail'}</span>,
+  BreadcrumbExtraPropsTest: ({ foo, bar }) => (
     <span>
-      {isLocationTest ? 'pass' : 'fail'}
+      {foo}
+      {bar}
     </span>
   ),
-  BreadcrumbExtraPropsTest: ({ foo, bar }) => <span>{foo}{bar}</span>,
   BreadcrumbMemoized: React.memo(() => <span>Memoized</span>),
   // eslint-disable-next-line react/prefer-stateless-function
   BreadcrumbClass: class BreadcrumbClass extends React.PureComponent {
-    render() { return (<span>Class</span>); }
+    render() {
+      return <span>Class</span>;
+    }
   },
 };
 
@@ -75,27 +89,18 @@ const getMethod = () => {
   }
 };
 
-const render = ({
-  options,
-  pathname,
-  routes,
-  state,
-  props,
-}) => {
+const render = ({ options, pathname, routes, state, props }) => {
   const useBreadcrumbs = getHOC();
   const { Breadcrumbs } = components;
   const wrapper = mount(
-    <Router
-      initialIndex={0}
-      initialEntries={[{ pathname, state }]}
-    >
+    <Router initialIndex={0} initialEntries={[{ pathname, state }]}>
       <Breadcrumbs
         useBreadcrumbs={useBreadcrumbs}
         options={options}
         routes={routes}
-        {...props || {}}
+        {...(props || {})}
       />
-    </Router>,
+    </Router>
   );
 
   return {
@@ -118,10 +123,16 @@ components.Breadcrumbs.propTypes = {
     excludePaths: PropTypes.arrayOf(PropTypes.string),
     disableDefaults: PropTypes.bool,
   }),
-  routes: PropTypes.arrayOf(PropTypes.shape({
-    path: PropTypes.string.isRequired,
-    breadcrumb: PropTypes.oneOfType([PropTypes.node, PropTypes.func, PropTypes.object]),
-  })),
+  routes: PropTypes.arrayOf(
+    PropTypes.shape({
+      path: PropTypes.string.isRequired,
+      breadcrumb: PropTypes.oneOfType([
+        PropTypes.node,
+        PropTypes.func,
+        PropTypes.object,
+      ]),
+    })
+  ),
 };
 
 components.Breadcrumbs.defaultProps = {
@@ -163,7 +174,10 @@ describe('use-react-router-breadcrumbs', () => {
         // test advanced breadcrumb component (user can use `match` however they wish)
         { path: '/1/2/:number', breadcrumb: components.BreadcrumbMatchTest },
         // test NavLink wrapped breadcrumb
-        { path: '/1/2/:number/4', breadcrumb: components.BreadcrumbNavLinkTest },
+        {
+          path: '/1/2/:number/4',
+          breadcrumb: components.BreadcrumbNavLinkTest,
+        },
         // test a no-match route
         { path: '/no-match', breadcrumb: 'no match' },
       ];
@@ -207,13 +221,17 @@ describe('use-react-router-breadcrumbs', () => {
 
   describe('Different component types', () => {
     it('Should render memoized components', () => {
-      const routes = [{ path: '/memo', breadcrumb: components.BreadcrumbMemoized }];
+      const routes = [
+        { path: '/memo', breadcrumb: components.BreadcrumbMemoized },
+      ];
       const { breadcrumbs } = render({ pathname: '/memo', routes });
       expect(breadcrumbs).toBe('Home / Memoized');
     });
 
     it('Should render class components', () => {
-      const routes = [{ path: '/class', breadcrumb: components.BreadcrumbClass }];
+      const routes = [
+        { path: '/class', breadcrumb: components.BreadcrumbClass },
+      ];
       const { breadcrumbs } = render({ pathname: '/class', routes });
       expect(breadcrumbs).toBe('Home / Class');
     });
@@ -252,9 +270,7 @@ describe('use-react-router-breadcrumbs', () => {
             {
               path: '/one/two',
               breadcrumb: 'TwoCustom',
-              routes: [
-                { path: '/one/two/three', breadcrumb: 'ThreeCustom' },
-              ],
+              routes: [{ path: '/one/two/three', breadcrumb: 'ThreeCustom' }],
             },
           ],
         },
@@ -301,8 +317,14 @@ describe('use-react-router-breadcrumbs', () => {
 
   describe('When using the location object', () => {
     it('Should be provided in the rendered breadcrumb component', () => {
-      const routes = [{ path: '/one', breadcrumb: components.BreadcrumbLocationTest }];
-      const { breadcrumbs } = render({ pathname: '/one', state: { isLocationTest: true }, routes });
+      const routes = [
+        { path: '/one', breadcrumb: components.BreadcrumbLocationTest },
+      ];
+      const { breadcrumbs } = render({
+        pathname: '/one',
+        state: { isLocationTest: true },
+        routes,
+      });
       expect(breadcrumbs).toBe('Home / pass');
     });
   });
@@ -339,7 +361,10 @@ describe('use-react-router-breadcrumbs', () => {
   describe('Options', () => {
     describe('excludePaths', () => {
       it('Should not return breadcrumbs for specified paths', () => {
-        const { breadcrumbs } = render({ pathname: '/one/two', options: { excludePaths: ['/', '/one'] } });
+        const { breadcrumbs } = render({
+          pathname: '/one/two',
+          options: { excludePaths: ['/', '/one'] },
+        });
         expect(breadcrumbs).toBe('Two');
       });
 
@@ -360,15 +385,26 @@ describe('use-react-router-breadcrumbs', () => {
 
     describe('options without routes array', () => {
       it('Should be able to set options without defining a routes array', () => {
-        const { breadcrumbs } = render({ pathname: '/one/two', routes: null, options: { excludePaths: ['/', '/one'] } });
+        const { breadcrumbs } = render({
+          pathname: '/one/two',
+          routes: null,
+          options: { excludePaths: ['/', '/one'] },
+        });
         expect(breadcrumbs).toBe('Two');
       });
     });
 
     describe('disableDefaults', () => {
       it('Should disable all default breadcrumb generation', () => {
-        const routes = [{ path: '/one', breadcrumb: 'One' }, { path: '/one/two' }];
-        const { breadcrumbs } = render({ pathname: '/one/two', routes, options: { disableDefaults: true } });
+        const routes = [
+          { path: '/one', breadcrumb: 'One' },
+          { path: '/one/two' },
+        ];
+        const { breadcrumbs } = render({
+          pathname: '/one/two',
+          routes,
+          options: { disableDefaults: true },
+        });
 
         expect(breadcrumbs).toBe('One');
       });
@@ -377,8 +413,14 @@ describe('use-react-router-breadcrumbs', () => {
 
   describe('Invalid route object', () => {
     it('Should error if `path` is not provided', () => {
-      expect(() => getMethod()({ routes: [{ breadcrumb: 'Yo' }], location: { pathname: '/1' } }))
-        .toThrow('withBreadcrumbs: `path` must be provided in every route object');
+      expect(() =>
+        getMethod()({
+          routes: [{ breadcrumb: 'Yo' }],
+          location: { pathname: '/1' },
+        })
+      ).toThrow(
+        'withBreadcrumbs: `path` must be provided in every route object'
+      );
     });
   });
 

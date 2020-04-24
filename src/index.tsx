@@ -2,15 +2,15 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * This script exports a HOC that accepts a routes array of objects
+ * This script exports a hook that accepts a routes array of objects
  * and an options object.
  *
  * API:
  *
- * withBreadcrumbs(
+ * useBreadcrumbs(
  *   routes?: Array<Route>,
  *   options? Object<Options>,
- * ): HigherOrderComponent
+ * ): Array<BreadcrumbData>
  *
  * More Info:
  *
@@ -44,10 +44,10 @@ export interface BreadcrumbsRoute {
 }
 
 export interface BreadcrumbData {
-  match: { url: string },
-  location: Location,
-  key: string,
-  breadcrumb: React.ReactNode
+  match: { url: string };
+  location: Location;
+  key: string;
+  breadcrumb: React.ReactNode;
 }
 
 const DEFAULT_MATCH_OPTIONS = { exact: true };
@@ -58,10 +58,11 @@ const NO_BREADCRUMB = 'NO_BREADCRUMB';
  * we used to use the humanize-string package, but it added a lot of bundle
  * size and issues with compilation. This 4-liner seems to cover most cases.
  */
-const humanize = (str: string): string => str
-  .replace(/^[\s_]+|[\s_]+$/g, '')
-  .replace(/[_\s]+/g, ' ')
-  .replace(/^[a-z]/, (m) => m.toUpperCase());
+const humanize = (str: string): string =>
+  str
+    .replace(/^[\s_]+|[\s_]+$/g, '')
+    .replace(/[_\s]+/g, ' ')
+    .replace(/^[a-z]/, (m) => m.toUpperCase());
 
 /**
  * Renders and returns the breadcrumb complete
@@ -73,35 +74,41 @@ const render = ({
   location,
   ...rest
 }: {
-  breadcrumb: React.ComponentType | string,
-  match: { url: string },
-  location: Location
+  breadcrumb: React.ComponentType | string;
+  match: { url: string };
+  location: Location;
 }): BreadcrumbData => {
   const componentProps = { match, location, key: match.url, ...rest };
 
   return {
     ...componentProps,
-    breadcrumb: typeof Breadcrumb === 'string'
-      ? createElement('span', { key: componentProps.key }, Breadcrumb)
-      : <Breadcrumb {...componentProps} />,
+    breadcrumb:
+      typeof Breadcrumb === 'string' ? (
+        createElement('span', { key: componentProps.key }, Breadcrumb)
+      ) : (
+        <Breadcrumb {...componentProps} />
+      ),
   };
 };
 
 /**
  * Small helper method to get a default breadcrumb if the user hasn't provided one.
-*/
+ */
 const getDefaultBreadcrumb = ({
   currentSection,
   location,
   pathSection,
 }: {
-  currentSection: string,
-  location: Location,
-  pathSection: string,
-}) => {
-  const match = matchPath(pathSection, { ...DEFAULT_MATCH_OPTIONS, path: pathSection })
-    /* istanbul ignore next: this is hard to mock in jest :( */
-    || { url: 'not-found' };
+  currentSection: string;
+  location: Location;
+  pathSection: string;
+}): BreadcrumbData => {
+  const match = matchPath(pathSection, {
+    ...DEFAULT_MATCH_OPTIONS,
+    path: pathSection,
+  }) /* istanbul ignore next: this is hard to mock in jest :( */ || {
+    url: 'not-found',
+  };
 
   return render({
     breadcrumb: humanize(currentSection),
@@ -113,7 +120,7 @@ const getDefaultBreadcrumb = ({
 /**
  * Loops through the route array (if provided) and returns either a
  * user-provided breadcrumb OR a sensible default (if enabled)
-*/
+ */
 const getBreadcrumbMatch = ({
   currentSection,
   disableDefaults,
@@ -122,64 +129,76 @@ const getBreadcrumbMatch = ({
   pathSection,
   routes,
 }: {
-  currentSection: string,
-  disableDefaults?: boolean,
-  excludePaths?: string[],
-  location: Location,
-  pathSection: string,
-  routes: BreadcrumbsRoute[]
-}) => {
+  currentSection: string;
+  disableDefaults?: boolean;
+  excludePaths?: string[];
+  location: Location;
+  pathSection: string;
+  routes: BreadcrumbsRoute[];
+}): typeof NO_BREADCRUMB | BreadcrumbData => {
   let breadcrumb: BreadcrumbData | typeof NO_BREADCRUMB | undefined;
 
   // Check the optional `excludePaths` option in `options` to see if the
   // current path should not include a breadcrumb.
-  const getIsPathExcluded = (path: string) => matchPath(pathSection, {
-    path,
-    exact: true,
-    strict: false,
-  });
+  const getIsPathExcluded = (path: string): boolean =>
+    matchPath(pathSection, {
+      path,
+      exact: true,
+      strict: false,
+    }) != null;
+
   if (excludePaths && excludePaths.some(getIsPathExcluded)) {
     return NO_BREADCRUMB;
   }
 
   // Loop through the route array and see if the user has provided a custom breadcrumb.
-  routes.some(({ breadcrumb: userProvidedBreadcrumb, matchOptions, path, ...rest }) => {
-    if (!path) {
-      throw new Error('withBreadcrumbs: `path` must be provided in every route object');
-    }
+  routes.some(
+    ({ breadcrumb: userProvidedBreadcrumb, matchOptions, path, ...rest }) => {
+      if (!path) {
+        throw new Error(
+          'withBreadcrumbs: `path` must be provided in every route object'
+        );
+      }
 
-    const match = matchPath(pathSection, { ...(matchOptions || DEFAULT_MATCH_OPTIONS), path });
+      const match = matchPath(pathSection, {
+        ...(matchOptions || DEFAULT_MATCH_OPTIONS),
+        path,
+      });
 
-    // If user passed breadcrumb: null OR custom match options to suppress a breadcrumb
-    // we need to know NOT to add it to the matches array
-    // see: `if (breadcrumb !== NO_BREADCRUMB)` below.
-    if ((match && userProvidedBreadcrumb === null) || (!match && matchOptions)) {
-      breadcrumb = NO_BREADCRUMB;
-      return true;
-    }
-
-    if (match) {
-      // This covers the case where a user may be extending their react-router route
-      // config with breadcrumbs, but also does not want default breadcrumbs to be
-      // automatically generated (opt-in).
-      if (!userProvidedBreadcrumb && disableDefaults) {
+      // If user passed breadcrumb: null OR custom match options to suppress a breadcrumb
+      // we need to know NOT to add it to the matches array
+      // see: `if (breadcrumb !== NO_BREADCRUMB)` below.
+      if (
+        (match && userProvidedBreadcrumb === null) ||
+        (!match && matchOptions)
+      ) {
         breadcrumb = NO_BREADCRUMB;
         return true;
       }
 
-      breadcrumb = render({
-        // Although we have a match, the user may be passing their react-router config object
-        // which we support. The route config object may not have a `breadcrumb` param specified.
-        // If this is the case, we should provide a default via `humanize`.
-        breadcrumb: userProvidedBreadcrumb || humanize(currentSection),
-        match,
-        location,
-        ...rest,
-      });
-      return true;
+      if (match) {
+        // This covers the case where a user may be extending their react-router route
+        // config with breadcrumbs, but also does not want default breadcrumbs to be
+        // automatically generated (opt-in).
+        if (!userProvidedBreadcrumb && disableDefaults) {
+          breadcrumb = NO_BREADCRUMB;
+          return true;
+        }
+
+        breadcrumb = render({
+          // Although we have a match, the user may be passing their react-router config object
+          // which we support. The route config object may not have a `breadcrumb` param specified.
+          // If this is the case, we should provide a default via `humanize`.
+          breadcrumb: userProvidedBreadcrumb || humanize(currentSection),
+          match,
+          location,
+          ...rest,
+        });
+        return true;
+      }
+      return false;
     }
-    return false;
-  });
+  );
 
   // User provided a breadcrumb prop, or we generated one above.
   if (breadcrumb) {
@@ -203,19 +222,17 @@ const getBreadcrumbMatch = ({
 /**
  * Splits the pathname into sections, then search for matches in the routes
  * a user-provided breadcrumb OR a sensible default.
-*/
-export const getBreadcrumbs = (
-  {
-    routes,
-    location,
-    options = {},
-  }: {
-    routes: BreadcrumbsRoute[],
-    location: Location,
-    options?: Options
-  },
-): Array<BreadcrumbData> => {
-  const matches: Array<BreadcrumbData> = [];
+ */
+export const getBreadcrumbs = ({
+  routes,
+  location,
+  options = {},
+}: {
+  routes: BreadcrumbsRoute[];
+  location: Location;
+  options?: Options;
+}): BreadcrumbData[] => {
+  const matches: BreadcrumbData[] = [];
   const { pathname } = location;
 
   pathname
@@ -223,34 +240,39 @@ export const getBreadcrumbs = (
     // Split pathname into sections.
     .split('/')
     // Reduce over the sections and call `getBreadcrumbMatch()` for each section.
-    .reduce((previousSection: string, currentSection: string, index: number) => {
-      // Combine the last route section with the currentSection.
-      // For example, `pathname = /1/2/3` results in match checks for
-      // `/1`, `/1/2`, `/1/2/3`.
-      const pathSection = !currentSection ? '/' : `${previousSection}/${currentSection}`;
+    .reduce(
+      (previousSection: string, currentSection: string, index: number) => {
+        // Combine the last route section with the currentSection.
+        // For example, `pathname = /1/2/3` results in match checks for
+        // `/1`, `/1/2`, `/1/2/3`.
+        const pathSection = !currentSection
+          ? '/'
+          : `${previousSection}/${currentSection}`;
 
-      // Ignore trailing slash or double slashes in the URL
-      if (pathSection === '/' && index !== 0) {
-        return '';
-      }
+        // Ignore trailing slash or double slashes in the URL
+        if (pathSection === '/' && index !== 0) {
+          return '';
+        }
 
-      const breadcrumb = getBreadcrumbMatch({
-        currentSection,
-        location,
-        pathSection,
-        routes,
-        ...options,
-      });
+        const breadcrumb = getBreadcrumbMatch({
+          currentSection,
+          location,
+          pathSection,
+          routes,
+          ...options,
+        });
 
-      // Add the breadcrumb to the matches array
-      // unless the user has explicitly passed.
-      // { path: x, breadcrumb: null } to disable.
-      if (breadcrumb !== NO_BREADCRUMB) {
-        matches.push(breadcrumb);
-      }
+        // Add the breadcrumb to the matches array
+        // unless the user has explicitly passed.
+        // { path: x, breadcrumb: null } to disable.
+        if (breadcrumb !== NO_BREADCRUMB) {
+          matches.push(breadcrumb);
+        }
 
-      return pathSection === '/' ? '' : pathSection;
-    }, '');
+        return pathSection === '/' ? '' : pathSection;
+      },
+      ''
+    );
 
   return matches;
 };
@@ -258,9 +280,9 @@ export const getBreadcrumbs = (
 /**
  * Takes a route array and recursively flattens it IF there are
  * nested routes in the config.
-*/
-const flattenRoutes = (routes: BreadcrumbsRoute[]) => (routes)
-  .reduce((arr, route: BreadcrumbsRoute): BreadcrumbsRoute[] => {
+ */
+const flattenRoutes = (routes: BreadcrumbsRoute[]): BreadcrumbsRoute[] =>
+  routes.reduce((arr, route: BreadcrumbsRoute): BreadcrumbsRoute[] => {
     if (route.routes) {
       return arr.concat([route, ...flattenRoutes(route.routes)]);
     }
@@ -272,11 +294,12 @@ const flattenRoutes = (routes: BreadcrumbsRoute[]) => (routes)
  */
 const useReactRouterBreadcrumbs = (
   routes?: BreadcrumbsRoute[],
-  options?: Options,
-) => getBreadcrumbs({
-  routes: flattenRoutes(routes || []),
-  location: useLocation(),
-  options,
-});
+  options?: Options
+): BreadcrumbData[] =>
+  getBreadcrumbs({
+    routes: flattenRoutes(routes || []),
+    location: useLocation(),
+    options,
+  });
 
 export default useReactRouterBreadcrumbs;
