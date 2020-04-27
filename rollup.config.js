@@ -5,7 +5,7 @@ import { uglify } from 'rollup-plugin-uglify';
 import typescript from 'rollup-plugin-typescript2';
 import ts from 'typescript';
 
-const pkg = require('./package.json');
+import pkg from './package.json';
 
 const external = Object.keys(pkg.peerDependencies);
 
@@ -32,8 +32,16 @@ const plugins = [
 ];
 
 const exports = [
-  { format: 'cjs', file: pkg.main, plugins: plugins.concat([commonjs(), uglify()]) },
-  { format: 'umd', file: pkg.umd, plugins: plugins.concat([commonjs(), uglify()]) },
+  {
+    format: 'cjs',
+    file: pkg.main,
+    plugins: plugins.concat([commonjs(), uglify()]),
+  },
+  {
+    format: 'umd',
+    file: pkg.umd,
+    plugins: plugins.concat([commonjs(), uglify()]),
+  },
   { format: 'es', file: pkg.module, plugins },
 ];
 

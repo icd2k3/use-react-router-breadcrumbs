@@ -1,17 +1,31 @@
 {
-  "extends": "airbnb",
+  "extends": [
+    "airbnb",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:prettier/recommended",
+    "prettier/@typescript-eslint",
+    "prettier/react"
+  ],
   "parser": "@typescript-eslint/parser",
-  "plugins": ["@typescript-eslint"],
-  "env": { "jasmine": true },
+  "plugins": [
+    "@typescript-eslint",
+    "prettier",
+    "react-hooks"
+  ],
+  "env": {
+    "jasmine": true
+  },
   "rules": {
     "object-curly-newline": 0,
     "react/destructuring-assignment": 0,
     "react/jsx-one-expression-per-line": 0,
     "react/jsx-filename-extension": 0,
     "react/no-multi-comp": 0,
-    "react/jsx-props-no-spreading": 0
+    "react/jsx-props-no-spreading": 0,
+    "@typescript-eslint/explicit-function-return-type": 0
   },
   "globals": {
-    "jest": "writeable"
+    "jest": "writable"
   }
 }

@@ -1,13 +1,11 @@
-/* eslint-disable */
-
-module.exports = function(api) {
+module.exports = (api) => {
   api.cache(true);
 
   return {
     presets: [
       '@babel/preset-env',
       '@babel/preset-react',
-      '@babel/preset-typescript'
+      '@babel/preset-typescript',
     ],
     plugins: [],
   };
