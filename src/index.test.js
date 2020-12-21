@@ -1,4 +1,3 @@
-// @ts-nocheck
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable react/jsx-filename-extension */
 import React from 'react';
