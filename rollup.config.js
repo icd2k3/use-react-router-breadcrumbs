@@ -1,7 +1,7 @@
 import babel from 'rollup-plugin-babel';
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
-import { uglify } from 'rollup-plugin-uglify';
+import { terser } from 'rollup-plugin-terser';
 import typescript from 'rollup-plugin-typescript2';
 import ts from 'typescript';
 
@@ -35,12 +35,12 @@ const exports = [
   {
     format: 'cjs',
     file: pkg.main,
-    plugins: plugins.concat([commonjs(), uglify()]),
+    plugins: plugins.concat([commonjs(), terser()]),
   },
   {
     format: 'umd',
     file: pkg.umd,
-    plugins: plugins.concat([commonjs(), uglify()]),
+    plugins: plugins.concat([commonjs(), terser()]),
   },
   { format: 'es', file: pkg.module, plugins },
 ];
