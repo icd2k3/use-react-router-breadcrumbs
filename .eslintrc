@@ -17,6 +17,8 @@
     "jasmine": true
   },
   "rules": {
+    "no-use-before-define": "off",
+    "@typescript-eslint/no-use-before-define": ["error"],
     "object-curly-newline": 0,
     "react/destructuring-assignment": 0,
     "react/jsx-one-expression-per-line": 0,
