@@ -24,10 +24,8 @@ import { matchPath, useLocation } from 'react-router';
 type Location = ReturnType<typeof useLocation>;
 
 export interface Options {
-  currentSection?: string;
   disableDefaults?: boolean;
   excludePaths?: string[];
-  pathSection?: string;
 }
 
 export interface MatchOptions {
@@ -41,6 +39,7 @@ export interface BreadcrumbsRoute {
   breadcrumb?: React.ComponentType | React.ElementType | string | null;
   matchOptions?: MatchOptions;
   routes?: BreadcrumbsRoute[];
+  props?: { [x: string]: unknown };
 }
 
 export interface BreadcrumbData {
@@ -72,13 +71,19 @@ const render = ({
   breadcrumb: Breadcrumb,
   match,
   location,
-  ...rest
+  props,
 }: {
   breadcrumb: React.ComponentType | string;
   match: { url: string };
   location: Location;
+  props?: { [x: string]: unknown };
 }): BreadcrumbData => {
-  const componentProps = { match, location, key: match.url, ...rest };
+  const componentProps = {
+    match,
+    location,
+    key: match.url,
+    ...(props || {}),
+  };
 
   return {
     ...componentProps,
@@ -156,7 +161,7 @@ const getBreadcrumbMatch = ({
     ({ breadcrumb: userProvidedBreadcrumb, matchOptions, path, ...rest }) => {
       if (!path) {
         throw new Error(
-          'withBreadcrumbs: `path` must be provided in every route object'
+          'useBreadcrumbs: `path` must be provided in every route object'
         );
       }
 
