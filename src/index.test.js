@@ -4,22 +4,27 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { mount } from 'enzyme';
 import { MemoryRouter as Router } from 'react-router';
-import withBreadcrumbs, { getBreadcrumbs } from './index.tsx';
+import useBreadcrumbs, { getBreadcrumbs } from './index.tsx';
 
 // imports to test compiled builds
-import withBreadcrumbsCompiledES, {
+import useBreadcrumbsCompiledES, {
   getBreadcrumbs as getBreadcrumbsCompiledES,
 } from '../dist/es/index';
-import withBreadcrumbsCompiledUMD, {
+import useBreadcrumbsCompiledUMD, {
   getBreadcrumbs as getBreadcrumbsCompiledUMD,
 } from '../dist/umd/index';
-import withBreadcrumbsCompiledCJS, {
+import useBreadcrumbsCompiledCJS, {
   getBreadcrumbs as getBreadcrumbsCompiledCJS,
 } from '../dist/cjs/index';
 
 const components = {
-  Breadcrumbs: ({ useBreadcrumbs, options, routes, ...forwardedProps }) => {
-    const breadcrumbs = useBreadcrumbs(routes, options);
+  Breadcrumbs: ({
+    useBreadcrumbs: useBreadcrumbsHook,
+    options,
+    routes,
+    ...forwardedProps
+  }) => {
+    const breadcrumbs = useBreadcrumbsHook(routes, options);
 
     return (
       <h1>
@@ -65,13 +70,13 @@ const components = {
 const getHOC = () => {
   switch (process.env.TEST_BUILD) {
     case 'cjs':
-      return withBreadcrumbsCompiledCJS;
+      return useBreadcrumbsCompiledCJS;
     case 'umd':
-      return withBreadcrumbsCompiledUMD;
+      return useBreadcrumbsCompiledUMD;
     case 'es':
-      return withBreadcrumbsCompiledES;
+      return useBreadcrumbsCompiledES;
     default:
-      return withBreadcrumbs;
+      return useBreadcrumbs;
   }
 };
 
@@ -89,12 +94,12 @@ const getMethod = () => {
 };
 
 const render = ({ options, pathname, routes, state, props }) => {
-  const useBreadcrumbs = getHOC();
+  const useBreadcrumbsHook = getHOC();
   const { Breadcrumbs } = components;
   const wrapper = mount(
     <Router initialIndex={0} initialEntries={[{ pathname, state }]}>
       <Breadcrumbs
-        useBreadcrumbs={useBreadcrumbs}
+        useBreadcrumbs={useBreadcrumbsHook}
         options={options}
         routes={routes}
         {...(props || {})}
@@ -348,8 +353,10 @@ describe('use-react-router-breadcrumbs', () => {
         {
           path: '/one',
           breadcrumb: components.BreadcrumbExtraPropsTest,
-          foo: 'Pass through',
-          bar: ' props',
+          props: {
+            foo: 'Pass through',
+            bar: ' props',
+          },
         },
       ];
       const { breadcrumbs } = render({ pathname: '/one', routes });
@@ -418,7 +425,7 @@ describe('use-react-router-breadcrumbs', () => {
           location: { pathname: '/1' },
         })
       ).toThrow(
-        'withBreadcrumbs: `path` must be provided in every route object'
+        'useBreadcrumbs: `path` must be provided in every route object'
       );
     });
   });

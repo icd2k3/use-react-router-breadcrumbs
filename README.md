@@ -275,24 +275,28 @@ Now, `example.com/users/create` will display `create-breadcrumb` as expected, be
 ## API
 
 ```js
-Route = {
+BreadcrumbsRoute = {
   path: String
   breadcrumb?: React.ComponentType | React.ElementType | string | null
-  matchOptions?: { // see: https://reacttraining.com/react-router/web/api/matchPath
+  // see: https://reacttraining.com/react-router/web/api/matchPath
+  matchOptions?: {
     exact?: boolean
     strict?: boolean
     sensitive?: boolean
   }
-  routes?: BreadcrumbsRoute[]  // optional nested routes (for react-router config compatibility)
+  // optional nested routes (for react-router config compatibility)
+  routes?: BreadcrumbsRoute[],
+  // optional props to be passed through directly to the breadcrumb component
+  props?: { [x: string]: unknown };
 }
 
 Options = {
-  currentSection?: string
+  // disable all default generation of breadcrumbs
   disableDefaults?: boolean
+  // exclude certain paths fom generating breadcrumbs
   excludePaths?: string[]
-  pathSection?: string
 }
 
 // if routes are not passed, default breadcrumbs will be returned
-useBreadcrumbs(routes?: Route[], options?: Options): Array<React.node>
+useBreadcrumbs(routes?: BreadcrumbsRoute[], options?: Options): Array<React.node>
 ```
