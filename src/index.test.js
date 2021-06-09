@@ -29,8 +29,8 @@ const components = {
     return (
       <h1>
         <div className="forwarded-props">
-          {forwardedProps &&
-            Object.values(forwardedProps)
+          {forwardedProps
+            && Object.values(forwardedProps)
               .filter((v) => typeof v === 'string')
               .map((value) => <span key={value}>{value}</span>)}
         </div>
@@ -104,7 +104,7 @@ const render = ({ options, pathname, routes, state, props }) => {
         routes={routes}
         {...(props || {})}
       />
-    </Router>
+    </Router>,
   );
 
   return {
@@ -135,7 +135,7 @@ components.Breadcrumbs.propTypes = {
         PropTypes.func,
         PropTypes.object,
       ]),
-    })
+    }),
   ),
 };
 
@@ -419,13 +419,11 @@ describe('use-react-router-breadcrumbs', () => {
 
   describe('Invalid route object', () => {
     it('Should error if `path` is not provided', () => {
-      expect(() =>
-        getMethod()({
-          routes: [{ breadcrumb: 'Yo' }],
-          location: { pathname: '/1' },
-        })
-      ).toThrow(
-        'useBreadcrumbs: `path` must be provided in every route object'
+      expect(() => getMethod()({
+        routes: [{ breadcrumb: 'Yo' }],
+        location: { pathname: '/1' },
+      })).toThrow(
+        'useBreadcrumbs: `path` must be provided in every route object',
       );
     });
   });
