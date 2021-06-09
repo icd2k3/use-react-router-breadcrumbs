@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  A small (~1.6kb gzip), flexible, <a href="https://reactjs.org/docs/hooks-intro.html">hook</a> for rendering breadcrumbs with <a href="https://github.com/ReactTraining/react-router">react-router</a> (5.1 and up).
+  A small (~1.25kb gzip), flexible, <a href="https://reactjs.org/docs/hooks-intro.html">hook</a> for rendering breadcrumbs with <a href="https://github.com/ReactTraining/react-router">react-router</a> (5.1 and up).
 </p>
 
 <hr/>
@@ -22,7 +22,7 @@
 
 <p align="center">
   <code>
-    This package only works with `react-router` 5.1 and up. If you need a (very) similar solution for an earlier version, check out <a href="https://github.com/icd2k3/react-router-breadcrumbs-hoc">react-router-breadcrumbs-hoc</a>
+    If you'd rather use a Higher Order Component, check out <a href="https://github.com/icd2k3/react-router-breadcrumbs-hoc">react-router-breadcrumbs-hoc</a>
   </code>
 </p>
 
