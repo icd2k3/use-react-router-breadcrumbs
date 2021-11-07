@@ -212,6 +212,30 @@ describe('use-react-router-breadcrumbs', () => {
       const { breadcrumbs } = render({ pathname: '/user/create', routes });
       expect(breadcrumbs).toBe('Root / User / Add User');
     });
+
+    it('Should match the correct breadcrumb in route if they have the same score', () => {
+      const routes = [
+        {
+          path: 'user/*',
+          breadcrumb: 'User',
+          children: [{ index: true, breadcrumb: 'Hello' }],
+        },
+        {
+          path: 'user/:pid',
+          children: [{ path: '*', breadcrumb: 'World' }],
+        },
+        {
+          path: 'user/create',
+          breadcrumb: 'First Create',
+        },
+        {
+          path: 'user/create',
+          breadcrumb: 'Last Create',
+        },
+      ];
+      const { breadcrumbs } = render({ pathname: '/user/create/x', routes });
+      expect(breadcrumbs).toBe('Home / User / First Create / World');
+    });
   });
 
   describe('Different component types', () => {
@@ -300,6 +324,17 @@ describe('use-react-router-breadcrumbs', () => {
       ];
       const { breadcrumbs } = render({ pathname: '/one', routes });
       expect(breadcrumbs).toBe('Home / Parent');
+    });
+
+    it('Should use the default breadcrumb If neither the index route nor the parent route provide breadcrumb', () => {
+      const routes = [
+        {
+          path: 'one',
+          children: [{ index: true }],
+        },
+      ];
+      const { breadcrumbs } = render({ pathname: '/one', routes });
+      expect(breadcrumbs).toBe('Home / One');
     });
   });
 

@@ -134,7 +134,7 @@ function flattenRoutes(
   parentPath = '',
 ): BreadcrumbsRouteBranch[] {
   routes.forEach((route, index) => {
-    if (!route.path && !route.index) {
+    if (typeof route.path !== 'string' && !route.index) {
       throw new Error(
         'useBreadcrumbs: `path` or `index` must be provided in every route object',
       );
