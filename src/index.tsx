@@ -26,67 +26,67 @@ import {
   PathPattern,
 } from 'react-router';
 
- type Location = ReturnType<typeof useLocation>;
+type Location = ReturnType<typeof useLocation>;
 
 export interface Options {
-   disableDefaults?: boolean;
-   excludePaths?: string[];
- }
+  disableDefaults?: boolean;
+  excludePaths?: string[];
+}
 
 export interface BreadcrumbMatch<ParamKey extends string = string> {
-   /**
-    * The names and values of dynamic parameters in the URL.
-    */
-   params: Params<ParamKey>;
-   /**
-    * The portion of the URL pathname that was matched.
-    */
-   pathname: string;
-   /**
-    * The pattern that was used to match.
-    */
-   pattern: PathPattern;
-   /**
-    * The route object that was used to match.
-    */
-   route?: BreadcrumbsRoute;
- }
+  /**
+   * The names and values of dynamic parameters in the URL.
+   */
+  params: Params<ParamKey>;
+  /**
+   * The portion of the URL pathname that was matched.
+   */
+  pathname: string;
+  /**
+   * The pattern that was used to match.
+   */
+  pattern: PathPattern;
+  /**
+   * The route object that was used to match.
+   */
+  route?: BreadcrumbsRoute;
+}
 
 export interface BreadcrumbComponentProps<ParamKey extends string = string> {
-   key: string;
-   match: BreadcrumbMatch<ParamKey>;
-   location: Location;
- }
+  key: string;
+  match: BreadcrumbMatch<ParamKey>;
+  location: Location;
+}
 
 export type BreadcrumbComponentType<ParamKey extends string = string> =
-   React.ComponentType<BreadcrumbComponentProps<ParamKey>>;
+  React.ComponentType<BreadcrumbComponentProps<ParamKey>>;
 
 export interface BreadcrumbsRoute<ParamKey extends string = string>
-   extends RouteObject {
-   children?: BreadcrumbsRoute[];
-   breadcrumb?: BreadcrumbComponentType<ParamKey> | string | null;
-   props?: { [x: string]: unknown };
- }
+  extends RouteObject {
+  children?: BreadcrumbsRoute[];
+  breadcrumb?: BreadcrumbComponentType<ParamKey> | string | null;
+  props?: { [x: string]: unknown };
+}
 
 export interface BreadcrumbData<ParamKey extends string = string> {
-   match: BreadcrumbMatch<ParamKey>;
-   location: Location;
-   key: string;
-   breadcrumb: React.ReactNode;
- }
+  match: BreadcrumbMatch<ParamKey>;
+  location: Location;
+  key: string;
+  breadcrumb: React.ReactNode;
+}
 
- // The code below is modified from React Router
- interface BreadcrumbsRouteMeta {
-   relativePath: string;
-   childrenIndex: number;
-   route: BreadcrumbsRoute;
- }
+// The code below is modified from React Router
+interface BreadcrumbsRouteMeta {
+  relativePath: string;
+  childrenIndex: number;
+  route: BreadcrumbsRoute;
+}
 
- interface BreadcrumbsRouteBranch {
-   path: string;
-   score: number;
-   routesMeta: BreadcrumbsRouteMeta[];
- }
+interface BreadcrumbsRouteBranch {
+  path: string;
+  score: number;
+  routesMeta: BreadcrumbsRouteMeta[];
+}
 
 const joinPaths = (paths: string[]): string => paths.join('/').replace(/\/\/+/g, '/');
 
@@ -193,30 +193,30 @@ function rankRouteBranches(
 const NO_BREADCRUMB = Symbol('NO_BREADCRUMB');
 
 /**
-  * This method was "borrowed" from https://stackoverflow.com/a/28339742
-  * we used to use the humanize-string package, but it added a lot of bundle
-  * size and issues with compilation. This 4-liner seems to cover most cases.
-  */
+ * This method was "borrowed" from https://stackoverflow.com/a/28339742
+ * we used to use the humanize-string package, but it added a lot of bundle
+ * size and issues with compilation. This 4-liner seems to cover most cases.
+ */
 const humanize = (str: string): string => str
   .replace(/^[\s_]+|[\s_]+$/g, '')
   .replace(/[_\s]+/g, ' ')
   .replace(/^[a-z]/, (m) => m.toUpperCase());
 
 /**
-  * Renders and returns the breadcrumb complete
-  * with `match`, `location`, and `key` props.
-  */
+ * Renders and returns the breadcrumb complete
+ * with `match`, `location`, and `key` props.
+ */
 const render = ({
   breadcrumb: Breadcrumb,
   match,
   location,
   props,
 }: {
-   breadcrumb: BreadcrumbComponentType | string;
-   match: BreadcrumbMatch;
-   location: Location;
-   props?: { [x: string]: unknown };
- }): BreadcrumbData => {
+  breadcrumb: BreadcrumbComponentType | string;
+  match: BreadcrumbMatch;
+  location: Location;
+  props?: { [x: string]: unknown };
+}): BreadcrumbData => {
   const componentProps = {
     match,
     location,
@@ -227,26 +227,26 @@ const render = ({
   return {
     ...componentProps,
     breadcrumb:
-       typeof Breadcrumb === 'string' ? (
-         createElement('span', { key: componentProps.key }, Breadcrumb)
-       ) : (
-         <Breadcrumb {...componentProps} />
-       ),
+      typeof Breadcrumb === 'string' ? (
+        createElement('span', { key: componentProps.key }, Breadcrumb)
+      ) : (
+        <Breadcrumb {...componentProps} />
+      ),
   };
 };
 
 /**
-  * Small helper method to get a default breadcrumb if the user hasn't provided one.
-  */
+ * Small helper method to get a default breadcrumb if the user hasn't provided one.
+ */
 const getDefaultBreadcrumb = ({
   currentSection,
   location,
   pathSection,
 }: {
-   currentSection: string;
-   location: Location;
-   pathSection: string;
- }): BreadcrumbData => {
+  currentSection: string;
+  location: Location;
+  pathSection: string;
+}): BreadcrumbData => {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const match = matchPath(
     {
@@ -264,9 +264,9 @@ const getDefaultBreadcrumb = ({
 };
 
 /**
-  * Loops through the route array (if provided) and returns either a
-  * user-provided breadcrumb OR a sensible default (if enabled)
-  */
+ * Loops through the route array (if provided) and returns either a
+ * user-provided breadcrumb OR a sensible default (if enabled)
+ */
 const getBreadcrumbMatch = ({
   currentSection,
   disableDefaults,
@@ -275,13 +275,13 @@ const getBreadcrumbMatch = ({
   pathSection,
   branches,
 }: {
-   currentSection: string;
-   disableDefaults?: boolean;
-   excludePaths?: string[];
-   location: Location;
-   pathSection: string;
-   branches: BreadcrumbsRouteBranch[];
- }): typeof NO_BREADCRUMB | BreadcrumbData => {
+  currentSection: string;
+  disableDefaults?: boolean;
+  excludePaths?: string[];
+  location: Location;
+  pathSection: string;
+  branches: BreadcrumbsRouteBranch[];
+}): typeof NO_BREADCRUMB | BreadcrumbData => {
   let breadcrumb: BreadcrumbData | typeof NO_BREADCRUMB | undefined;
 
   // Check the optional `excludePaths` option in `options` to see if the
@@ -372,18 +372,18 @@ const getBreadcrumbMatch = ({
 };
 
 /**
-  * Splits the pathname into sections, then search for matches in the routes
-  * a user-provided breadcrumb OR a sensible default.
-  */
+ * Splits the pathname into sections, then search for matches in the routes
+ * a user-provided breadcrumb OR a sensible default.
+ */
 export const getBreadcrumbs = ({
   routes,
   location,
   options = {},
 }: {
-   routes: BreadcrumbsRoute[];
-   location: Location;
-   options?: Options;
- }): BreadcrumbData[] => {
+  routes: BreadcrumbsRoute[];
+  location: Location;
+  options?: Options;
+}): BreadcrumbData[] => {
   const { pathname } = location;
 
   const branches = rankRouteBranches(flattenRoutes(routes));
@@ -429,8 +429,8 @@ export const getBreadcrumbs = ({
 };
 
 /**
-  * Default hook function export.
-  */
+ * Default hook function export.
+ */
 const useReactRouterBreadcrumbs = (
   routes?: BreadcrumbsRoute[],
   options?: Options,
