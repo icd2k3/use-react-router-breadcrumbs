@@ -262,8 +262,6 @@ useBreadcrumbs(routes, { excludePaths: ['/', '/no-breadcrumb/for-this-route'] })
 
 `use-react-router-breadcrumbs` uses the [same strategy](https://reactrouter.com/docs/en/v6/getting-started/concepts#ranking-routes) as `react-router 6` to calculate the routing order.
 
-... in certain cases. Consider the following:
-
 ```js
 [
   {
