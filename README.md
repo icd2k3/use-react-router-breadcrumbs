@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  A small (~1.25kb gzip), flexible, <a href="https://reactjs.org/docs/hooks-intro.html">hook</a> for rendering breadcrumbs with <a href="https://github.com/ReactTraining/react-router">react-router</a> (5.1 and up).
+  A small (~1.25kb gzip), flexible, <a href="https://reactjs.org/docs/hooks-intro.html">hook</a> for rendering breadcrumbs with <a href="https://github.com/ReactTraining/react-router">react-router 6</a>.
 </p>
 
 <hr/>
@@ -21,10 +21,10 @@
 <hr/>
 
 <p align="center">
-  <code>
-    If you'd rather use a Higher Order Component, check out <a href="https://github.com/icd2k3/react-router-breadcrumbs-hoc">react-router-breadcrumbs-hoc</a>
-  </code>
+  Using an <b>older version</B> of <code>react-router</code>? Check out <a href="https://github.com/icd2k3/react-router-breadcrumbs-hoc">react-router-breadcrumbs-hoc</a> which is compatible with v4 and v5.
 </p>
+
+---
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -46,7 +46,7 @@
 
 ## Description
 
-Render breadcrumbs for `react-router` however you want!
+Render breadcrumbs for `react-router` 6 however you want!
 
 #### Features
 - Easy to get started with automatically generated breadcrumbs.
@@ -260,7 +260,7 @@ useBreadcrumbs(routes, { excludePaths: ['/', '/no-breadcrumb/for-this-route'] })
 
 ## Order matters!
 
-`use-react-router-breadcrumbs` uses the same strategy as `React Router v6` to calculate the routing order.
+`use-react-router-breadcrumbs` uses the [same strategy](https://reactrouter.com/docs/en/v6/getting-started/concepts#ranking-routes) as `react-router 6` to calculate the routing order.
 
 ... in certain cases. Consider the following:
 
