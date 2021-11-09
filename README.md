@@ -4,7 +4,6 @@
 
 <p align="center">
   <a href="https://github.com/icd2k3/use-react-router-breadcrumbs/actions" target="_blank"><img src="https://github.com/icd2k3/use-react-router-breadcrumbs/workflows/Node.js%20CI/badge.svg" /></a>
-  <a href="https://david-dm.org/icd2k3/use-react-router-breadcrumbs" title="dependencies status"><img src="https://david-dm.org/icd2k3/use-react-router-breadcrumbs/status.svg"/></a>
   <a href='https://coveralls.io/github/icd2k3/use-react-router-breadcrumbs?branch=master'><img src='https://coveralls.io/repos/github/icd2k3/use-react-router-breadcrumbs/badge.svg?branch=master' alt='Coverage Status' /></a>
 </p>
 
