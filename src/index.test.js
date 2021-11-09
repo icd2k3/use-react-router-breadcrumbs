@@ -46,7 +46,7 @@ const components = {
     );
   },
   BreadcrumbMatchTest: ({ match }) => <span>{match.params.number}</span>,
-  BreadcrumbNavLinkTest: ({ match }) => <a to={match.url}>Link</a>,
+  BreadcrumbNavLinkTest: ({ match }) => <a to={match.pathname}>Link</a>,
   BreadcrumbLocationTest: ({
     location: {
       state: { isLocationTest },
@@ -115,10 +115,9 @@ const render = ({ options, pathname, routes, state, props }) => {
 };
 
 const matchShape = {
-  isExact: PropTypes.bool.isRequired,
   params: PropTypes.shape().isRequired,
-  path: PropTypes.string.isRequired,
-  url: PropTypes.string.isRequired,
+  pathname: PropTypes.string.isRequired,
+  pattern: PropTypes.object.isRequired,
 };
 
 components.Breadcrumbs.propTypes = {
@@ -128,14 +127,24 @@ components.Breadcrumbs.propTypes = {
     disableDefaults: PropTypes.bool,
   }),
   routes: PropTypes.arrayOf(
-    PropTypes.shape({
-      path: PropTypes.string.isRequired,
-      breadcrumb: PropTypes.oneOfType([
-        PropTypes.node,
-        PropTypes.func,
-        PropTypes.object,
-      ]),
-    }),
+    PropTypes.oneOfType([
+      PropTypes.shape({
+        path: PropTypes.string.isRequired,
+        breadcrumb: PropTypes.oneOfType([
+          PropTypes.node,
+          PropTypes.func,
+          PropTypes.object,
+        ]),
+      }),
+      PropTypes.shape({
+        index: PropTypes.bool.isRequired,
+        breadcrumb: PropTypes.oneOfType([
+          PropTypes.node,
+          PropTypes.func,
+          PropTypes.object,
+        ]),
+      }),
+    ]),
   ),
 };
 
@@ -182,44 +191,50 @@ describe('use-react-router-breadcrumbs', () => {
           path: '/1/2/:number/4',
           breadcrumb: components.BreadcrumbNavLinkTest,
         },
-        // test a no-match route
-        { path: '/no-match', breadcrumb: 'no match' },
+        // test a `*` route
+        { path: '*', breadcrumb: 'Any' },
       ];
-      const { breadcrumbs, wrapper } = render({ pathname: '/1/2/3/4', routes });
-      expect(breadcrumbs).toBe('Home / One / TWO / 3 / Link');
+      const { breadcrumbs, wrapper } = render({ pathname: '/1/2/3/4/5', routes });
+      expect(breadcrumbs).toBe('Home / One / TWO / 3 / Link / Any');
       expect(wrapper.find('a').props().to).toBe('/1/2/3/4');
     });
   });
 
   describe('Route order', () => {
-    it('Should match the first breadcrumb in route array user/create', () => {
+    it('Should intelligently match the more suitable breadcrumb in route array user/create', () => {
       const routes = [
-        {
-          path: '/user/create',
-          breadcrumb: 'Add User',
-        },
-        {
-          path: '/user/:id',
-          breadcrumb: '1',
-        },
+        { path: '/', breadcrumb: 'Home' },
+        // index has higher score
+        { index: true, breadcrumb: 'Root' },
+        { path: '/user/:id', breadcrumb: '1' },
+        { path: '/user/create', breadcrumb: 'Add User' },
       ];
       const { breadcrumbs } = render({ pathname: '/user/create', routes });
-      expect(breadcrumbs).toBe('Home / User / Add User');
+      expect(breadcrumbs).toBe('Root / User / Add User');
     });
 
-    it('Should match the first breadcrumb in route array user/:id', () => {
+    it('Should match the correct breadcrumb in route if they have the same score', () => {
       const routes = [
         {
-          path: '/user/:id',
-          breadcrumb: 'Oops',
+          path: 'user/*',
+          breadcrumb: 'User',
+          children: [{ index: true, breadcrumb: 'Hello' }],
         },
         {
-          path: '/user/create',
-          breadcrumb: 'Add User',
+          path: 'user/:pid',
+          children: [{ path: '*', breadcrumb: 'World' }],
+        },
+        {
+          path: 'user/create',
+          breadcrumb: 'First Create',
+        },
+        {
+          path: 'user/create',
+          breadcrumb: 'Last Create',
         },
       ];
-      const { breadcrumbs } = render({ pathname: '/user/create', routes });
-      expect(breadcrumbs).toBe('Home / User / Oops');
+      const { breadcrumbs } = render({ pathname: '/user/create/x', routes });
+      expect(breadcrumbs).toBe('Home / User / First Create / World');
     });
   });
 
@@ -242,17 +257,16 @@ describe('use-react-router-breadcrumbs', () => {
   });
 
   describe('Custom match options', () => {
-    it('Should allow `strict` rule', () => {
+    it('Should allow `caseSensitive` rule', () => {
       const routes = [
         {
-          path: '/one/',
+          path: '/one',
           breadcrumb: '1',
-          // not recommended, but supported
-          matchOptions: { exact: false, strict: true },
+          caseSensitive: true,
         },
       ];
-      const { breadcrumbs } = render({ pathname: '/one', routes });
-      expect(breadcrumbs).toBe('');
+      const { breadcrumbs } = render({ pathname: '/OnE', routes });
+      expect(breadcrumbs).toBe('Home / OnE');
     });
   });
 
@@ -270,17 +284,57 @@ describe('use-react-router-breadcrumbs', () => {
       const routes = [
         {
           path: '/one',
-          routes: [
+          children: [
             {
               path: '/one/two',
               breadcrumb: 'TwoCustom',
-              routes: [{ path: '/one/two/three', breadcrumb: 'ThreeCustom' }],
+              children: [{ path: '/one/two/three', breadcrumb: 'ThreeCustom' }],
             },
           ],
         },
       ];
       const { breadcrumbs } = render({ pathname: '/one/two/three', routes });
       expect(breadcrumbs).toBe('Home / One / TwoCustom / ThreeCustom');
+    });
+
+    it('Should support nested routes with relative path', () => {
+      const routes = [
+        {
+          path: 'one',
+          children: [
+            {
+              path: 'two',
+              breadcrumb: 'TwoCustom',
+              children: [{ path: 'three', breadcrumb: 'ThreeCustom' }],
+            },
+          ],
+        },
+      ];
+      const { breadcrumbs } = render({ pathname: '/one/two/three', routes });
+      expect(breadcrumbs).toBe('Home / One / TwoCustom / ThreeCustom');
+    });
+
+    it('Should use the breadcrumb provided by parent if the index route dose not provide one', () => {
+      const routes = [
+        {
+          path: 'one',
+          breadcrumb: 'Parent',
+          children: [{ index: true }],
+        },
+      ];
+      const { breadcrumbs } = render({ pathname: '/one', routes });
+      expect(breadcrumbs).toBe('Home / Parent');
+    });
+
+    it('Should use the default breadcrumb If neither the index route nor the parent route provide breadcrumb', () => {
+      const routes = [
+        {
+          path: 'one',
+          children: [{ index: true }],
+        },
+      ];
+      const { breadcrumbs } = render({ pathname: '/one', routes });
+      expect(breadcrumbs).toBe('Home / One');
     });
   });
 
@@ -418,12 +472,39 @@ describe('use-react-router-breadcrumbs', () => {
   });
 
   describe('Invalid route object', () => {
-    it('Should error if `path` is not provided', () => {
+    it('Should error if `path` or `index` is not provided', () => {
       expect(() => getMethod()({
         routes: [{ breadcrumb: 'Yo' }],
         location: { pathname: '/1' },
       })).toThrow(
-        'useBreadcrumbs: `path` must be provided in every route object',
+        'useBreadcrumbs: `path` or `index` must be provided in every route object',
+      );
+    });
+
+    it('Should error if both `path` and `index` are provided', () => {
+      expect(() => getMethod()({
+        routes: [{ index: true, path: '/', breadcrumb: 'Yo' }],
+        location: { pathname: '/1' },
+      })).toThrow(
+        'useBreadcrumbs: `path` and `index` cannot be provided at the same time',
+      );
+    });
+
+    it('Should not support nested absolute paths', () => {
+      expect(() => getMethod()({
+        routes: [{ path: '/a', breadcrumb: 'Yo', children: [{ path: '/b' }] }],
+        location: { pathname: '/1' },
+      })).toThrow(
+        'useBreadcrumbs: The absolute path of the child route must start with the parent path',
+      );
+    });
+
+    it('Should error If the index route provides children', () => {
+      expect(() => getMethod()({
+        routes: [{ index: true, breadcrumb: 'Yo', children: [{ path: '/b' }] }],
+        location: { pathname: '/1' },
+      })).toThrow(
+        'useBreadcrumbs: Index route cannot have child routes',
       );
     });
   });

@@ -51,7 +51,7 @@ Render breadcrumbs for `react-router` however you want!
 #### Features
 - Easy to get started with automatically generated breadcrumbs.
 - Render, map, and wrap breadcrumbs any way you want.
-- Compatible with existing [route configs](https://reacttraining.com/react-router/web/example/route-config).
+- Compatible with existing [route objects](https://reactrouter.com/docs/en/v6/examples/route-objects).
 
 ## Install
 
@@ -114,8 +114,8 @@ const Breadcrumbs = () => {
         match,
         breadcrumb
       }) => (
-        <span key={match.url}>
-          <NavLink to={match.url}>{breadcrumb}</NavLink>
+        <span key={match.pathname}>
+          <NavLink to={match.pathname}>{breadcrumb}</NavLink>
         </span>
       ))}
     </>
@@ -131,17 +131,17 @@ Pathname | Result
 /users/1 | Home / Users / John
 /example | Home / Custom Example
 
-## [Route config](https://reacttraining.com/react-router/web/example/route-config) compatibility
+## [Route object](https://reactrouter.com/docs/en/v6/examples/route-objects) compatibility
 
-Add breadcrumbs to your existing [route config](https://reacttraining.com/react-router/web/example/route-config). This is a great way to keep all routing config paths in a single place! If a path ever changes, you'll only have to change it in your main route config rather than maintaining a _separate_ config for `use-react-router-breadcrumbs`.
+Add breadcrumbs to your existing [route object](https://reactrouter.com/docs/en/v6/examples/route-objects). This is a great way to keep all routing config paths in a single place! If a path ever changes, you'll only have to change it in your main route config rather than maintaining a _separate_ config for `use-react-router-breadcrumbs`.
 
 For example...
 
 ```js
-const routeConfig = [
+const routes = [
   {
     path: "/sandwiches",
-    component: Sandwiches
+    element: <Sandwiches />
   }
 ];
 ```
@@ -149,26 +149,26 @@ const routeConfig = [
 becomes...
 
 ```js
-const routeConfig = [
+const routes = [
   {
     path: "/sandwiches",
-    component: Sandwiches,
+    element: <Sandwiches />,
     breadcrumb: 'I love sandwiches'
   }
 ];
 ```
 
-then you can just pass the whole route config right into the hook:
+then you can just pass the whole routes right into the hook:
 
 ```js
-const breadcrumbs = useBreadcrumbs(routeConfig);
+const breadcrumbs = useBreadcrumbs(routes);
 ```
 
 ## Dynamic breadcrumb components
 
-If you pass a component as the `breadcrumb` prop it will be injected with react-router's [match](https://reacttraining.com/react-router/web/api/match) and [location](https://reacttraining.com/react-router/web/api/location) objects as props. These objects contain ids, hashes, queries, etc... from the route that will allow you to map back to whatever you want to display in the breadcrumb.
+If you pass a component as the `breadcrumb` prop it will be injected with react-router's [match](https://reactrouter.com/docs/en/v6/api#matchpath) and [location](https://reactrouter.com/docs/en/v6/api#location) objects as props. These objects contain ids, hashes, queries, etc... from the route that will allow you to map back to whatever you want to display in the breadcrumb.
 
-Let's use `redux` as an example with the [match](https://reacttraining.com/react-router/web/api/match) object:
+Let's use `redux` as an example with the [match](https://reactrouter.com/docs/en/v6/api#matchpath) object:
 
 ```js
 // UserBreadcrumb.jsx
@@ -194,9 +194,19 @@ const breadcrumbs = useBreadcrumbs([{
 }]);
 ```
 
+You cannot use hooks that rely on `RouteContext` like `useParams`, because the breadcrumbs are not in the context, you should use `match.params` instead:
+
+```tsx
+import type { BreadcrumbComponentType } from 'use-react-router-breadcrumbs';
+
+const UserBreadcrumb: BreadcrumbComponentType<'id'> = ({ match }) => {
+  return <div>{match.params.id}</div>;
+}
+```
+
 ----
 
-Similarly, the [location](https://reacttraining.com/react-router/web/api/location) object could be useful for displaying dynamic breadcrumbs based on the route's state:
+Similarly, the [location](https://reactrouter.com/docs/en/v6/api#location) object could be useful for displaying dynamic breadcrumbs based on the route's state:
 
 ```jsx
 // dynamically update EditorBreadcrumb based on state info
@@ -250,53 +260,76 @@ useBreadcrumbs(routes, { excludePaths: ['/', '/no-breadcrumb/for-this-route'] })
 
 ## Order matters!
 
+`use-react-router-breadcrumbs` uses the same strategy as `React Router v6` to calculate the routing order.
+
 ... in certain cases. Consider the following:
 
 ```js
 [
-  { path: '/users/:id', breadcrumb: 'id-breadcrumb' },
-  { path: '/users/create', breadcrumb: 'create-breadcrumb' },
+  {
+    path: 'users',
+    children: [
+      { path: ':id', breadcrumb: 'id-breadcrumb' },
+      { path: 'create', breadcrumb: 'create-breadcrumb' },
+    ],
+  },
 ]
 ```
 
-If the user visits `example.com/users/create` they will see `id-breadcrumb` because `/users/:id` will match _before_ `/users/create`.
+If the user visits `example.com/users/create` they will see `create-breadcrumb`.
 
-To fix the issue above, just adjust the order of your routes:
+In addition, if the index route and the parent route provide breadcrumb at the same time, the index route provided will be used first:
 
 ```js
 [
-  { path: '/users/create', breadcrumb: 'create-breadcrumb' },
-  { path: '/users/:id', breadcrumb: 'id-breadcrumb' },
+  {
+    path: 'users',
+    breadcrumb: 'parent-breadcrumb',
+    children: [
+      { index: true, breadcrumb: 'child-breadcrumb' },
+    ],
+  },
 ]
 ```
 
-Now, `example.com/users/create` will display `create-breadcrumb` as expected, because it will match first before the `/users/:id` route.
+If the user visits `example.com/users` they will see `child-breadcrumb`.
 
 ## API
 
-```js
-BreadcrumbsRoute = {
-  path: String
-  breadcrumb?: React.ComponentType | React.ElementType | string | null
-  // see: https://reacttraining.com/react-router/web/api/matchPath
-  matchOptions?: {
-    exact?: boolean
-    strict?: boolean
-    sensitive?: boolean
-  }
-  // optional nested routes (for react-router config compatibility)
-  routes?: BreadcrumbsRoute[],
-  // optional props to be passed through directly to the breadcrumb component
+```ts
+interface BreadcrumbComponentProps<ParamKey extends string = string> {
+  key: string;
+  match: BreadcrumbMatch<ParamKey>;
+  location: Location;
+}
+
+type BreadcrumbComponentType<ParamKey extends string = string> =
+  React.ComponentType<BreadcrumbComponentProps<ParamKey>>;
+
+interface BreadcrumbsRoute<ParamKey extends string = string>
+  extends RouteObject {
+  children?: BreadcrumbsRoute[];
+  breadcrumb?: BreadcrumbComponentType<ParamKey> | string | null;
   props?: { [x: string]: unknown };
 }
 
-Options = {
+interface Options {
   // disable all default generation of breadcrumbs
-  disableDefaults?: boolean
+  disableDefaults?: boolean;
   // exclude certain paths fom generating breadcrumbs
-  excludePaths?: string[]
+  excludePaths?: string[];
+}
+
+interface BreadcrumbData<ParamKey extends string = string> {
+  match: BreadcrumbMatch<ParamKey>;
+  location: Location;
+  key: string;
+  breadcrumb: React.ReactNode;
 }
 
 // if routes are not passed, default breadcrumbs will be returned
-useBreadcrumbs(routes?: BreadcrumbsRoute[], options?: Options): Array<React.node>
+function useBreadcrumbs(
+  routes?: BreadcrumbsRoute[],
+  options?: Options
+): BreadcrumbData[];
 ```
