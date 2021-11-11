@@ -65,6 +65,7 @@ const components = {
       return <span>Class</span>;
     }
   },
+  Layout: React.memo(({ children }) => <div>{children}</div>),
 };
 
 const getHOC = () => {
@@ -129,7 +130,7 @@ components.Breadcrumbs.propTypes = {
   routes: PropTypes.arrayOf(
     PropTypes.oneOfType([
       PropTypes.shape({
-        path: PropTypes.string.isRequired,
+        path: PropTypes.string,
         breadcrumb: PropTypes.oneOfType([
           PropTypes.node,
           PropTypes.func,
@@ -137,7 +138,15 @@ components.Breadcrumbs.propTypes = {
         ]),
       }),
       PropTypes.shape({
-        index: PropTypes.bool.isRequired,
+        index: PropTypes.bool,
+        breadcrumb: PropTypes.oneOfType([
+          PropTypes.node,
+          PropTypes.func,
+          PropTypes.object,
+        ]),
+      }),
+      PropTypes.shape({
+        children: PropTypes.arrayOf(PropTypes.shape()).isRequired,
         breadcrumb: PropTypes.oneOfType([
           PropTypes.node,
           PropTypes.func,
@@ -172,6 +181,14 @@ components.BreadcrumbLocationTest.propTypes = {
 components.BreadcrumbExtraPropsTest.propTypes = {
   foo: PropTypes.string.isRequired,
   bar: PropTypes.string.isRequired,
+};
+
+components.Layout.propTypes = {
+  children: PropTypes.node,
+};
+
+components.Layout.defaultProps = {
+  children: null,
 };
 
 describe('use-react-router-breadcrumbs', () => {
@@ -312,6 +329,26 @@ describe('use-react-router-breadcrumbs', () => {
       ];
       const { breadcrumbs } = render({ pathname: '/one/two/three', routes });
       expect(breadcrumbs).toBe('Home / One / TwoCustom / ThreeCustom');
+    });
+
+    it('Should allow layout routes', () => {
+      const routes = [
+        {
+          element: <components.Layout />,
+          children: [
+            {
+              path: 'about',
+              breadcrumb: 'About',
+            },
+          ],
+        },
+        {
+          index: true,
+          breadcrumb: 'Home',
+        },
+      ];
+      const { breadcrumbs } = render({ pathname: '/about', routes });
+      expect(breadcrumbs).toBe('Home / About');
     });
 
     it('Should use the breadcrumb provided by parent if the index route dose not provide one', () => {
