@@ -343,7 +343,7 @@ const getBreadcrumbMatch = ({
         // which we support. The route config object may not have a `breadcrumb` param specified.
         // If this is the case, we should provide a default via `humanize`.
         breadcrumb: userProvidedBreadcrumb || humanize(currentSection),
-        match,
+        match: { ...match, route },
         location,
         props,
       });

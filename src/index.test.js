@@ -46,6 +46,7 @@ const components = {
     );
   },
   BreadcrumbMatchTest: ({ match }) => <span>{match.params.number}</span>,
+  BreadcrumbRouteTest: ({ match }) => <span>{match.route?.arbitraryProp}</span>,
   BreadcrumbNavLinkTest: ({ match }) => <a to={match.pathname}>Link</a>,
   BreadcrumbLocationTest: ({
     location: {
@@ -166,6 +167,10 @@ components.BreadcrumbMatchTest.propTypes = {
   match: PropTypes.shape(matchShape).isRequired,
 };
 
+components.BreadcrumbRouteTest.propTypes = {
+  match: PropTypes.shape(matchShape).isRequired,
+};
+
 components.BreadcrumbNavLinkTest.propTypes = {
   match: PropTypes.shape(matchShape).isRequired,
 };
@@ -211,7 +216,10 @@ describe('use-react-router-breadcrumbs', () => {
         // test a `*` route
         { path: '*', breadcrumb: 'Any' },
       ];
-      const { breadcrumbs, wrapper } = render({ pathname: '/1/2/3/4/5', routes });
+      const { breadcrumbs, wrapper } = render({
+        pathname: '/1/2/3/4/5',
+        routes,
+      });
       expect(breadcrumbs).toBe('Home / One / TWO / 3 / Link / Any');
       expect(wrapper.find('a').props().to).toBe('/1/2/3/4');
     });
@@ -455,6 +463,21 @@ describe('use-react-router-breadcrumbs', () => {
     });
   });
 
+  describe('When using the route object', () => {
+    it('should inject the matched route in the `match` property', () => {
+      const routes = [
+        {
+          path: '/one',
+          breadcrumb: components.BreadcrumbRouteTest,
+          arbitraryProp: 'foobar',
+        },
+      ];
+
+      const { breadcrumbs } = render({ pathname: '/one', routes });
+      expect(breadcrumbs).toBe('Home / foobar');
+    });
+  });
+
   describe('Options', () => {
     describe('excludePaths', () => {
       it('Should not return breadcrumbs for specified paths', () => {
@@ -529,7 +552,9 @@ describe('use-react-router-breadcrumbs', () => {
 
     it('Should not support nested absolute paths', () => {
       expect(() => getMethod()({
-        routes: [{ path: '/a', breadcrumb: 'Yo', children: [{ path: '/b' }] }],
+        routes: [
+          { path: '/a', breadcrumb: 'Yo', children: [{ path: '/b' }] },
+        ],
         location: { pathname: '/1' },
       })).toThrow(
         'useBreadcrumbs: The absolute path of the child route must start with the parent path',
@@ -538,11 +563,11 @@ describe('use-react-router-breadcrumbs', () => {
 
     it('Should error If the index route provides children', () => {
       expect(() => getMethod()({
-        routes: [{ index: true, breadcrumb: 'Yo', children: [{ path: '/b' }] }],
+        routes: [
+          { index: true, breadcrumb: 'Yo', children: [{ path: '/b' }] },
+        ],
         location: { pathname: '/1' },
-      })).toThrow(
-        'useBreadcrumbs: Index route cannot have child routes',
-      );
+      })).toThrow('useBreadcrumbs: Index route cannot have child routes');
     });
   });
 
