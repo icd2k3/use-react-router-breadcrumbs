@@ -200,7 +200,7 @@ const NO_BREADCRUMB = Symbol('NO_BREADCRUMB');
  */
 export const humanize = (str: string): string => str
   .replace(/^[\s_]+|[\s_]+$/g, '')
-  .replace(/[_\s]+/g, ' ')
+  .replace(/[-_\s]+/g, ' ')
   .replace(/^[a-z]/, (m) => m.toUpperCase());
 
 /**
@@ -347,7 +347,8 @@ const getBreadcrumbMatch = ({
         // Although we have a match, the user may be passing their react-router config object
         // which we support. The route config object may not have a `breadcrumb` param specified.
         // If this is the case, we should provide a default via `humanize`.
-        breadcrumb: userProvidedBreadcrumb || humanize(currentSection),
+        breadcrumb: userProvidedBreadcrumb
+        || (defaultFormatter ? defaultFormatter(currentSection) : humanize(currentSection)),
         match: { ...match, route },
         location,
         props,
