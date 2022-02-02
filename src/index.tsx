@@ -31,6 +31,7 @@ type Location = ReturnType<typeof useLocation>;
 export interface Options {
   disableDefaults?: boolean;
   excludePaths?: string[];
+  defaultFormatter?: (str: string) => string
 }
 
 export interface BreadcrumbMatch<ParamKey extends string = string> {
@@ -197,9 +198,9 @@ const NO_BREADCRUMB = Symbol('NO_BREADCRUMB');
  * we used to use the humanize-string package, but it added a lot of bundle
  * size and issues with compilation. This 4-liner seems to cover most cases.
  */
-const humanize = (str: string): string => str
+export const humanize = (str: string): string => str
   .replace(/^[\s_]+|[\s_]+$/g, '')
-  .replace(/[_\s]+/g, ' ')
+  .replace(/[-_\s]+/g, ' ')
   .replace(/^[a-z]/, (m) => m.toUpperCase());
 
 /**
@@ -242,10 +243,12 @@ const getDefaultBreadcrumb = ({
   currentSection,
   location,
   pathSection,
+  defaultFormatter,
 }: {
   currentSection: string;
   location: Location;
   pathSection: string;
+  defaultFormatter?: (str: string) => string
 }): BreadcrumbData => {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const match = matchPath(
@@ -257,7 +260,7 @@ const getDefaultBreadcrumb = ({
   )!;
 
   return render({
-    breadcrumb: humanize(currentSection),
+    breadcrumb: defaultFormatter ? defaultFormatter(currentSection) : humanize(currentSection),
     match,
     location,
   });
@@ -271,6 +274,7 @@ const getBreadcrumbMatch = ({
   currentSection,
   disableDefaults,
   excludePaths,
+  defaultFormatter,
   location,
   pathSection,
   branches,
@@ -278,6 +282,7 @@ const getBreadcrumbMatch = ({
   currentSection: string;
   disableDefaults?: boolean;
   excludePaths?: string[];
+  defaultFormatter?: (str: string) => string
   location: Location;
   pathSection: string;
   branches: BreadcrumbsRouteBranch[];
@@ -342,7 +347,8 @@ const getBreadcrumbMatch = ({
         // Although we have a match, the user may be passing their react-router config object
         // which we support. The route config object may not have a `breadcrumb` param specified.
         // If this is the case, we should provide a default via `humanize`.
-        breadcrumb: userProvidedBreadcrumb || humanize(currentSection),
+        breadcrumb: userProvidedBreadcrumb
+        || (defaultFormatter ? defaultFormatter(currentSection) : humanize(currentSection)),
         match: { ...match, route },
         location,
         props,
@@ -368,6 +374,7 @@ const getBreadcrumbMatch = ({
     // include a "Home" breadcrumb by default (can be overrode or disabled in config).
     currentSection: pathSection === '/' ? 'Home' : currentSection,
     location,
+    defaultFormatter,
   });
 };
 

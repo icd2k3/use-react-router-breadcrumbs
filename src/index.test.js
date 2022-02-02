@@ -529,6 +529,23 @@ describe('use-react-router-breadcrumbs', () => {
         expect(breadcrumbs).toBe('One');
       });
     });
+
+    describe('defaultFormatter', () => {
+      it('should be used if a breadcrumb is not provided for a specific path', () => {
+        const routes = [
+          { path: '/one', breadcrumb: 'One' },
+          { path: '/one/two' },
+          { path: '/one/two/three_four' },
+        ];
+        const { breadcrumbs } = render({
+          pathname: '/one/two/three_four',
+          routes,
+          options: { defaultFormatter: (breadcrumb) => breadcrumb.replace(/two/g, 'changed') },
+        });
+
+        expect(breadcrumbs).toBe('Home / One / changed / three_four');
+      });
+    });
   });
 
   describe('Invalid route object', () => {
