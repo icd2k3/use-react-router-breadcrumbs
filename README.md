@@ -321,6 +321,8 @@ interface Options {
   disableDefaults?: boolean;
   // exclude certain paths fom generating breadcrumbs
   excludePaths?: string[];
+  // optionally define a default formatter for generating breadcrumbs from URL segments
+  defaultFormatter?: (string) => string;
 }
 
 interface BreadcrumbData<ParamKey extends string = string> {
