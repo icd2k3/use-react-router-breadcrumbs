@@ -105,7 +105,7 @@ const CustomPropsBreadcrumb = ({ someProp }) => (
 const routes = [
   { path: '/users/:userId', breadcrumb: DynamicUserBreadcrumb },
   { path: '/example', breadcrumb: 'Custom Example' },
-  { path: '/custom-props, breadcrumb: CustomPropsBreadcrumb, props: { someProp: 'Hi' }}, 
+  { path: '/custom-props, breadcrumb: CustomPropsBreadcrumb, props: { someProp: 'Hi' }},
 ];
 
 // map & render your breadcrumb components however you want.
@@ -125,6 +125,85 @@ const Breadcrumbs = () => {
     </>
   );
 };
+```
+
+For the above example...
+
+Pathname | Result
+--- | ---
+/users | Home / Users
+/users/1 | Home / Users / John
+/example | Home / Custom Example
+/custom-props | Home / Hi
+
+### Advanced (Declarative Routes)
+Same as the example above using Declarative Routing.
+
+```js
+import useBreadcrumbs from 'use-react-router-breadcrumbs';
+
+const userNamesById = { '1': 'John' }
+
+const DynamicUserBreadcrumb = ({ match }) => (
+  <span>{userNamesById[match.params.userId]}</span>
+);
+
+const CustomPropsBreadcrumb = ({ someProp }) => (
+  <span>{someProp}</span>
+);
+
+// define custom breadcrumbs for certain routes.
+// breadcumbs can be components or strings.
+
+// map & render your breadcrumb components however you want.
+const BreadcrumbTrail = (routes) => {
+  const breadcrumbs = useBreadcrumbs(routes);
+
+  return (
+    <>
+      {breadcrumbs.map(({
+        match,
+        breadcrumb
+      }) => (
+        <span key={match.pathname}>
+          <NavLink to={match.pathname}>{breadcrumb}</NavLink>
+        </span>
+      ))}
+    </>
+  );
+};
+
+const BuildAppRoutes = () => {
+  // Full declarative react router support. example: Element, children, Nested Routes
+  return (
+    <Route path='/users/:userId' breadcrumb={DynamicUserBreadcrumb} element={<ProfilePage/>} />
+    <Route path='/example' breadcrumb='Custom Example' >
+      <Route path='/' breadcrumb='Custom Example' >
+        <ExamplePage/>
+      </Route>
+    </Route>
+    <Route path='/custom-props' breadcrumb={CustomPropsBreadcrumb} props={ someProp: 'Hi' } >
+      <CustomPage/>
+    </Route>
+  )
+};
+
+const AppRouter = () => {
+  // You could use context to set app Routes and add the breadcrumbs somewhere deeper in the application layout.
+  const BreadCrumbs = buildBreadcrumbs(routes)
+  const appRoutes = buildAppRoutes();
+  const GenerateRoutes = () => {
+    return useRoutes(appRoutes);
+  }
+  return (
+    <React.StrictMode>
+      <Router>
+        <BreadCrumbs/>
+        <GenerateRoutes/>
+      </Router>
+    <React.StrictMode>
+  )
+}
 ```
 
 For the above example...
