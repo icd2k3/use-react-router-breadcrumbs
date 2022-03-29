@@ -452,9 +452,7 @@ export default useReactRouterBreadcrumbs;
 
 // https://github.com/remix-run/react-router/blob/main/packages/react-router/index.tsx#L760
 
-///////////////////////////////////////////////////////////////////////////////
 // UTILS
-///////////////////////////////////////////////////////////////////////////////
 
 function invariant(cond: any, message: any) {
   if (!cond) throw new Error(message);
@@ -467,12 +465,12 @@ function invariant(cond: any, message: any) {
  *
  * @see https://reactrouter.com/docs/en/v6/api#createroutesfromchildren
  */
- export function createRoutesFromChildren(
-  children: React.ReactNode
+export function createRoutesFromChildren(
+  children: React.ReactNode,
 ): RouteObject[] {
-  let routes: RouteObject[] = [];
+  const routes: RouteObject[] = [];
 
-  React.Children.forEach(children, (element: string | number | boolean | {} | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactPortal | null | undefined) => {
+  React.Children.forEach(children, (element) => {
     if (!React.isValidElement(element)) {
       // Ignore non-elements. This allows people to more easily inline
       // conditionals in their route config.
@@ -481,6 +479,7 @@ function invariant(cond: any, message: any) {
 
     if (element.type === React.Fragment) {
       // Transparently support React.Fragment and its children.
+      // eslint-disable-next-line prefer-spread
       routes.push.apply(
         routes,
         createRoutesFromChildren(element.props.children)
@@ -491,11 +490,11 @@ function invariant(cond: any, message: any) {
     invariant(
       element.type === Route,
       `[${
-        typeof element.type === "string" ? element.type : element.type.name
+        typeof element.type === 'string' ? element.type : element.type.name
       }] is not a <Route> component. All component children of <Routes> must be a <Route> or <React.Fragment>`
     );
 
-    let route: RouteObject = {
+    const route: RouteObject = {
       caseSensitive: element.props.caseSensitive,
       element: element.props.element,
       index: element.props.index,
