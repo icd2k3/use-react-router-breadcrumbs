@@ -451,10 +451,11 @@ const useReactRouterBreadcrumbs = (
 export default useReactRouterBreadcrumbs;
 
 // https://github.com/remix-run/react-router/blob/main/packages/react-router/index.tsx#L760
+// The createRoutesFromChildren function has been modified to accept the breadcrumb route.
 
 // UTILS
 
-function invariant(cond: any, message: any) {
+function invariant(cond: any, message: string): asserts cond {
   if (!cond) throw new Error(message);
 }
 
@@ -467,9 +468,8 @@ function invariant(cond: any, message: any) {
  */
 export function createRoutesFromChildren(
   children: React.ReactNode,
-): RouteObject[] {
-  const routes: RouteObject[] = [];
-
+): BreadcrumbsRoute[] {
+  const routes: BreadcrumbsRoute[] = [];
   React.Children.forEach(children, (element) => {
     if (!React.isValidElement(element)) {
       // Ignore non-elements. This allows people to more easily inline
@@ -482,7 +482,7 @@ export function createRoutesFromChildren(
       // eslint-disable-next-line prefer-spread
       routes.push.apply(
         routes,
-        createRoutesFromChildren(element.props.children)
+        createRoutesFromChildren(element.props.children),
       );
       return;
     }
@@ -491,14 +491,15 @@ export function createRoutesFromChildren(
       element.type === Route,
       `[${
         typeof element.type === 'string' ? element.type : element.type.name
-      }] is not a <Route> component. All component children of <Routes> must be a <Route> or <React.Fragment>`
+      }] is not a <Route> component. All component children of <Routes> must be a <Route> or <React.Fragment>`,
     );
 
-    const route: RouteObject = {
+    const route: BreadcrumbsRoute = {
       caseSensitive: element.props.caseSensitive,
       element: element.props.element,
       index: element.props.index,
       path: element.props.path,
+      breadcrumb: element.props.breadcrumb,
     };
 
     if (element.props.children) {
