@@ -3,8 +3,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { mount } from 'enzyme';
-import { MemoryRouter as Router } from 'react-router';
-import useBreadcrumbs, { getBreadcrumbs } from './index.tsx';
+import { MemoryRouter as Router, Route, Routes } from 'react-router';
+import useBreadcrumbs, { getBreadcrumbs, createRoutesFromChildren } from './index.tsx';
 
 // imports to test compiled builds
 import useBreadcrumbsCompiledES, {
@@ -357,6 +357,28 @@ describe('use-react-router-breadcrumbs', () => {
       ];
       const { breadcrumbs } = render({ pathname: '/about', routes });
       expect(breadcrumbs).toBe('Home / About');
+    });
+
+    it('Should allow layout routes for declarative routes', () => {
+      const DeclarativeRoutes = (
+        <>
+          <Route path="/" element={<components.Layout />}>
+            <Route path="about" breadcrumb="About" />
+          </Route>
+          <Route index breadcrumb="Home" />
+          {false && <Route>unreached route</Route>}
+        </>
+      );
+      const routeObject = createRoutesFromChildren(DeclarativeRoutes);
+      const { breadcrumbs } = render({ pathname: '/about', routes: routeObject });
+      expect(breadcrumbs).toBe('Home / About');
+    });
+
+    it('Should throw if non route is used in Routes object', () => {
+      const DeclarativeRoutes = (
+        <div>div is not allowed as immediate child of Routes</div>
+      );
+      expect(() => { createRoutesFromChildren(DeclarativeRoutes); }).toThrow();
     });
 
     it('Should use the breadcrumb provided by parent if the index route dose not provide one', () => {
