@@ -140,7 +140,7 @@ Pathname | Result
 Same as the example above using Declarative Routing.
 
 ```js
-import useBreadcrumbs from 'use-react-router-breadcrumbs';
+import useBreadcrumbs, { createRoutesFromChildren } from 'use-react-router-breadcrumbs';
 
 const userNamesById = { '1': 'John' }
 
@@ -156,9 +156,7 @@ const CustomPropsBreadcrumb = ({ someProp }) => (
 // breadcumbs can be components or strings.
 
 // map & render your breadcrumb components however you want.
-const BreadcrumbTrail = (routes) => {
-  const breadcrumbs = useBreadcrumbs(routes);
-
+const BreadcrumbTrail = ({ breadCrumbs }) => {
   return (
     <>
       {breadcrumbs.map(({
@@ -173,7 +171,7 @@ const BreadcrumbTrail = (routes) => {
   );
 };
 
-const BuildAppRoutes = () => {
+const GenerateAppRoutes = () => {
   // Full declarative react router support. example: Element, children, Nested Routes
   return (
     <Route path='/users/:userId' breadcrumb={DynamicUserBreadcrumb} element={<ProfilePage/>} />
@@ -190,15 +188,14 @@ const BuildAppRoutes = () => {
 
 const AppRouter = () => {
   // You could use context to set app Routes and add the breadcrumbs somewhere deeper in the application layout.
-  const BreadCrumbs = buildBreadcrumbs(routes)
-  const appRoutes = buildAppRoutes();
-  const GenerateRoutes = () => {
-    return useRoutes(appRoutes);
-  }
+  const AppRoutes = GenerateAppRoutes();
+  const appRouteObjects = createRoutesFromChildren(AppRoutes);
+  const breadCrumbs = useBreadcrumbs(appRouteObjects)
+  const GeneratedRoutes = useRoutes(appRouteObjects);
   return (
     <React.StrictMode>
       <Router>
-        <BreadCrumbs/>
+        <BreadcrumbTrail breadCrumbs={breadCrumbs}/>
         <GenerateRoutes/>
       </Router>
     <React.StrictMode>
