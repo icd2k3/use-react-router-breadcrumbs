@@ -1,6 +1,6 @@
 {
   "name": "use-react-router-breadcrumbs",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "description": "A hook for displaying and setting breadcrumbs for react router",
   "main": "dist/cjs/index.js",
   "module": "dist/es/index.js",
