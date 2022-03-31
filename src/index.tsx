@@ -24,6 +24,7 @@ import {
   RouteObject,
   Params,
   PathPattern,
+  Route,
 } from 'react-router';
 
 type Location = ReturnType<typeof useLocation>;
@@ -448,3 +449,66 @@ const useReactRouterBreadcrumbs = (
 });
 
 export default useReactRouterBreadcrumbs;
+
+// https://github.com/remix-run/react-router/blob/main/packages/react-router/index.tsx#L760
+// The createRoutesFromChildren function has been modified to accept the breadcrumb route.
+
+// UTILS
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function invariant(cond: any, message: string): asserts cond {
+  if (!cond) throw new Error(message);
+}
+
+/**
+ * Creates a route config from a React "children" object, which is usually
+ * either a `<Route>` element or an array of them. Used internally by
+ * `<Routes>` to create a route config from its children.
+ *
+ * @see https://reactrouter.com/docs/en/v6/api#createroutesfromchildren
+ */
+export function createRoutesFromChildren(
+  children: React.ReactNode,
+): BreadcrumbsRoute[] {
+  const routes: BreadcrumbsRoute[] = [];
+  React.Children.forEach(children, (element) => {
+    if (!React.isValidElement(element)) {
+      // Ignore non-elements. This allows people to more easily inline
+      // conditionals in their route config.
+      return;
+    }
+
+    if (element.type === React.Fragment) {
+      // Transparently support React.Fragment and its children.
+      // eslint-disable-next-line prefer-spread
+      routes.push.apply(
+        routes,
+        createRoutesFromChildren(element.props.children),
+      );
+      return;
+    }
+
+    invariant(
+      element.type === Route,
+      `[${
+        typeof element.type === 'string' ? element.type : element.type.name
+      }] is not a <Route> component. All component children of <Routes> must be a <Route> or <React.Fragment>`,
+    );
+
+    const route: BreadcrumbsRoute = {
+      caseSensitive: element.props.caseSensitive,
+      element: element.props.element,
+      index: element.props.index,
+      path: element.props.path,
+      breadcrumb: element.props.breadcrumb,
+    };
+
+    if (element.props.children) {
+      route.children = createRoutesFromChildren(element.props.children);
+    }
+
+    routes.push(route);
+  });
+
+  return routes;
+}
