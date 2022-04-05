@@ -3,7 +3,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { mount } from 'enzyme';
-import { MemoryRouter as Router, Route, Routes } from 'react-router';
+import { MemoryRouter as Router, Route } from 'react-router';
 import useBreadcrumbs, { getBreadcrumbs, createRoutesFromChildren } from './index.tsx';
 
 // imports to test compiled builds

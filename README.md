@@ -140,7 +140,7 @@ Pathname | Result
 Same as the example above using Declarative Routing.
 
 ```js
-import useBreadcrumbs, { createRoutesFromChildren } from 'use-react-router-breadcrumbs';
+import useBreadcrumbs, { createRoutesFromChildren, Route } from 'use-react-router-breadcrumbs';
 
 const userNamesById = { '1': 'John' }
 
