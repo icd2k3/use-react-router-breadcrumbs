@@ -25,6 +25,9 @@ import {
   Params,
   PathPattern,
   Route,
+  PathRouteProps,
+  LayoutRouteProps,
+  IndexRouteProps,
 } from 'react-router';
 
 type Location = ReturnType<typeof useLocation>;
@@ -512,3 +515,13 @@ export function createRoutesFromChildren(
 
   return routes;
 }
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type BreadCrumb = { breadcrumb?: string | ((param: any) => JSX.Element) | JSX.Element | null };
+
+type BreadCrumbRouteType = (
+  _props: PathRouteProps | LayoutRouteProps | IndexRouteProps & BreadCrumb
+) => React.ReactElement | null;
+
+const BreadCrumbRoute: BreadCrumbRouteType = Route;
+
+export { BreadCrumbRoute as Route };
