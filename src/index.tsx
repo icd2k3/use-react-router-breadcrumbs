@@ -18,17 +18,18 @@
  *
  */
 import React, { createElement } from 'react';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import {
   matchPath,
   useLocation,
   RouteObject,
   Params,
-  PathPattern,
   Route,
   PathRouteProps,
   LayoutRouteProps,
   IndexRouteProps,
-} from 'react-router';
+} from 'react-router-dom';
+import { PathPattern } from 'react-router';
 
 type Location = ReturnType<typeof useLocation>;
 

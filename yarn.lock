@@ -2404,22 +2404,22 @@ __metadata:
   linkType: hard
 
 "@types/react-dom@npm:^17.0.7":
-  version: 17.0.7
-  resolution: "@types/react-dom@npm:17.0.7"
+  version: 17.0.15
+  resolution: "@types/react-dom@npm:17.0.15"
   dependencies:
-    "@types/react": "*"
-  checksum: 97df2088b5e1e1d3c6bf2ff6e4f8536bcd788cc7baeb49d912184923e4bee63d155d9821f15c4f36a6b89afe043f892d20015063a39a67aebf14dbc8998a1ccf
+    "@types/react": ^17
+  checksum: ed2f0e9451f613df10a01e3a0603762cd2cea550ebaa91319550eb1a39b8ae9004cb6297dce96ee8a884156dbd3e4a976dab8ed97479fdfb5799139cc619369b
   languageName: node
   linkType: hard
 
-"@types/react@npm:*, @types/react@npm:^17.0.11":
-  version: 17.0.11
-  resolution: "@types/react@npm:17.0.11"
+"@types/react@npm:^18.0.0":
+  version: 18.0.0
+  resolution: "@types/react@npm:18.0.0"
   dependencies:
     "@types/prop-types": "*"
     "@types/scheduler": "*"
     csstype: ^3.0.2
-  checksum: ed2b57e44e8da99b13a7b0cd7d9d9159e3113a5160e25c9deae4f577cfb87f05103b54bb0e9722f48a7db3ddb3a836ade12b971bbc338d397b719886fb81efff
+  checksum: 499a50174dc405e4e0106f5c0214003dd524305fd626b2bd7b2bbc1aa3d6380d5a696ff73391e3008a61a9f29c895110f44fb284b5ffd1fb502e5c2c819ed518
   languageName: node
   linkType: hard
 
@@ -5180,6 +5180,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"history@npm:^5.2.0":
+  version: 5.3.0
+  resolution: "history@npm:5.3.0"
+  dependencies:
+    "@babel/runtime": ^7.7.6
+  checksum: 5b53f1f59ff6106855d0fb40c865f47f00b2c0feb7336675797ffc358601e92bcc223c6af39a94a63b55f7002737096beb0078269bed55dbbc40cb10c80bc989
+  languageName: node
+  linkType: hard
+
 "hosted-git-info@npm:^2.1.4":
   version: 2.8.9
   resolution: "hosted-git-info@npm:2.8.9"
@@ -7825,6 +7834,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-router-dom@npm:^6.3.0":
+  version: 6.3.0
+  resolution: "react-router-dom@npm:6.3.0"
+  dependencies:
+    history: ^5.2.0
+    react-router: 6.3.0
+  peerDependencies:
+    react: ">=16.8"
+    react-dom: ">=16.8"
+  checksum: ea986038ffccd885026bcef7c2ddaa7ccb7f5c3e9401b5fe2dc5d7b9131c889cd36f413532e78475064d59bcd0f84437e1ee1494340cbde5ba53ae9b8a61eff2
+  languageName: node
+  linkType: hard
+
+"react-router@npm:6.3.0":
+  version: 6.3.0
+  resolution: "react-router@npm:6.3.0"
+  dependencies:
+    history: ^5.2.0
+  peerDependencies:
+    react: ">=16.8"
+  checksum: 9854c8adc97d8e1183d2e1f6bf108805077fb599fcaa19d18a0112dba1f159ff2f6c042c93d71477ab66370a493ddcfa6ccb6450de97d8b3b9bb93592ab4397f
+  languageName: node
+  linkType: hard
+
 "react-router@npm:^6.0.0":
   version: 6.0.1
   resolution: "react-router@npm:6.0.1"
@@ -9337,7 +9370,7 @@ typescript@^4.3.2:
     "@commitlint/config-conventional": ^12.1.4
     "@rollup/plugin-babel": ^5.3.0
     "@rollup/plugin-typescript": ^8.2.1
-    "@types/react": ^17.0.11
+    "@types/react": ^18.0.0
     "@types/react-dom": ^17.0.7
     "@typescript-eslint/eslint-plugin": ^4.26.1
     "@typescript-eslint/parser": ^4.26.1
@@ -9358,6 +9391,7 @@ typescript@^4.3.2:
     react: ^17.0.2
     react-dom: ^17.0.2
     react-router: ^6.0.0
+    react-router-dom: ^6.3.0
     rollup: ^2.51.1
     rollup-plugin-size: ^0.2.2
     rollup-plugin-terser: ^7.0.2
