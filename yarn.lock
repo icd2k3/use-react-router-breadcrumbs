@@ -1641,11 +1641,11 @@ __metadata:
   linkType: hard
 
 "@babel/runtime@npm:^7.7.6":
-  version: 7.16.0
-  resolution: "@babel/runtime@npm:7.16.0"
+  version: 7.17.9
+  resolution: "@babel/runtime@npm:7.17.9"
   dependencies:
     regenerator-runtime: ^0.13.4
-  checksum: 336e7f3ff6e7ecda749683c794eb5215410a2de1ec2845a39cbbd5eec870400aa68b9cc21dc44bf74d62e47682d0d0fb0600f263d218a23ba39f9cf6f1b7b54c
+  checksum: 69455c26017d0bd8e269c073c9da73238b25115f6eb655433f5411707ed6fe5f714f9b698cd1fcb7e89f5822e7b994db0bce394e54a89e6900fd7f0fb2c9927a
   languageName: node
   linkType: hard
 
@@ -5171,12 +5171,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"history@npm:^5.1.0":
-  version: 5.1.0
-  resolution: "history@npm:5.1.0"
+"history@npm:^5.2.0":
+  version: 5.3.0
+  resolution: "history@npm:5.3.0"
   dependencies:
     "@babel/runtime": ^7.7.6
-  checksum: be7587c614078b6bc39bb3b8ae4da92f9d5d175bf1480c12119d056135eeb88c73589894451536be3d6a3ae250822cc5bf95a2cf5dca26d10b736ac70da0c56f
+  checksum: 5b53f1f59ff6106855d0fb40c865f47f00b2c0feb7336675797ffc358601e92bcc223c6af39a94a63b55f7002737096beb0078269bed55dbbc40cb10c80bc989
   languageName: node
   linkType: hard
 
@@ -7825,14 +7825,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-router@npm:^6.0.0":
-  version: 6.0.1
-  resolution: "react-router@npm:6.0.1"
+"react-router@npm:^6.3.0":
+  version: 6.3.0
+  resolution: "react-router@npm:6.3.0"
   dependencies:
-    history: ^5.1.0
+    history: ^5.2.0
   peerDependencies:
     react: ">=16.8"
-  checksum: dfa23875d391f880f423ac044affacf4058438741c942abf692d53b78827acea27e590a98bc123cebeebdbb0f4573ea5c663b56c657dd441f1494ad762b1e502
+  checksum: 9854c8adc97d8e1183d2e1f6bf108805077fb599fcaa19d18a0112dba1f159ff2f6c042c93d71477ab66370a493ddcfa6ccb6450de97d8b3b9bb93592ab4397f
   languageName: node
   linkType: hard
 
@@ -9357,14 +9357,13 @@ typescript@^4.3.2:
     prop-types: ^15.7.2
     react: ^17.0.2
     react-dom: ^17.0.2
-    react-router: ^6.0.0
+    react-router: ^6.3.0
     rollup: ^2.51.1
     rollup-plugin-size: ^0.2.2
     rollup-plugin-terser: ^7.0.2
     typescript: ^4.3.2
   peerDependencies:
     react: ">=16.8"
-    react-router: ">=6.0.0"
   languageName: unknown
   linkType: soft
 
