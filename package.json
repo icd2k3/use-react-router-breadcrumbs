@@ -11,7 +11,8 @@
   "types": "dist/index.d.ts",
   "peerDependencies": {
     "react": ">=16.8",
-    "react-router": ">=6.0.0"
+    "react-router": ">=6.0.0",
+    "react-router-dom": ">=6.0.0"
   },
   "scripts": {
     "prepublishOnly": "yarn build && pinst --disable",
