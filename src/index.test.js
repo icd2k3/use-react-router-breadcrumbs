@@ -4,7 +4,7 @@ import '@testing-library/jest-dom';
 import React from 'react';
 import PropTypes from 'prop-types';
 import { render, screen } from '@testing-library/react';
-import { MemoryRouter as Router, Route } from 'react-router';
+import { MemoryRouter as Router, Route, useLocation } from 'react-router';
 import useBreadcrumbs, { getBreadcrumbs, createRoutesFromChildren } from './index.tsx';
 
 // imports to test compiled builds
@@ -26,9 +26,11 @@ const components = {
     ...forwardedProps
   }) => {
     const breadcrumbs = useBreadcrumbsHook(routes, options);
+    const location = useLocation();
 
     return (
       <h1>
+        <span>{location.pathname}</span>
         <div data-test-id="forwarded-props">
           {forwardedProps
             && Object.values(forwardedProps)
@@ -99,6 +101,7 @@ const getMethod = () => {
 const renderer = ({ options, pathname, routes, state, props }) => {
   const useBreadcrumbsHook = getHOC();
   const { Breadcrumbs } = components;
+
   const wrapper = render(
     <Router initialIndex={0} initialEntries={[{ pathname, state }]}>
       <Breadcrumbs
