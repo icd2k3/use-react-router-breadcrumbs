@@ -4,7 +4,6 @@ import '@testing-library/jest-dom';
 import React from 'react';
 import PropTypes from 'prop-types';
 import { render, screen } from '@testing-library/react';
-// import { mount } from 'enzyme';
 import { MemoryRouter as Router, Route } from 'react-router';
 import useBreadcrumbs, { getBreadcrumbs, createRoutesFromChildren } from './index.tsx';
 
@@ -225,7 +224,7 @@ describe('use-react-router-breadcrumbs', () => {
         // test a `*` route
         { path: '*', breadcrumb: 'Any' },
       ];
-      const { wrapper } = renderer({
+      renderer({
         pathname: '/1/2/3/4/5',
         routes,
       });
