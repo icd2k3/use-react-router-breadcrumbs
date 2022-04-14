@@ -206,7 +206,7 @@ const getByTextContent = (text) => screen.getByText((content, element) => {
 
 describe('use-react-router-breadcrumbs', () => {
   describe('Valid routes', () => {
-    it('Should renderer breadcrumb components as expected', () => {
+    it('Should render breadcrumb components as expected', () => {
       const routes = [
         // test home route
         { path: '/', breadcrumb: 'Home' },
@@ -272,7 +272,7 @@ describe('use-react-router-breadcrumbs', () => {
   });
 
   describe('Different component types', () => {
-    it('Should renderer memoized components', () => {
+    it('Should render memoized components', () => {
       const routes = [
         { path: '/memo', breadcrumb: components.BreadcrumbMemoized },
       ];
@@ -280,7 +280,7 @@ describe('use-react-router-breadcrumbs', () => {
       expect(getByTextContent('Home / Memoized')).toBeTruthy();
     });
 
-    it('Should renderer class components', () => {
+    it('Should render class components', () => {
       const routes = [
         { path: '/class', breadcrumb: components.BreadcrumbClass },
       ];
@@ -304,7 +304,7 @@ describe('use-react-router-breadcrumbs', () => {
   });
 
   describe('When extending react-router config', () => {
-    it('Should renderer expected breadcrumbs with sensible defaults', () => {
+    it('Should render expected breadcrumbs with sensible defaults', () => {
       const routes = [
         { path: '/one', breadcrumb: 'OneCustom' },
         { path: '/one/two' },
@@ -422,7 +422,7 @@ describe('use-react-router-breadcrumbs', () => {
     });
 
     describe('Override defaults', () => {
-      it('Should renderer user-provided breadcrumbs where possible and use defaults otherwise', () => {
+      it('Should render user-provided breadcrumbs where possible and use defaults otherwise', () => {
         const routes = [{ path: '/one', breadcrumb: 'Override' }];
         renderer({ pathname: '/one/two', routes });
         expect(getByTextContent('Home / Override / Two')).toBeTruthy();
