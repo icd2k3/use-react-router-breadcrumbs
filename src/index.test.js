@@ -1,9 +1,10 @@
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable react/jsx-filename-extension */
+import '@testing-library/jest-dom';
 import React from 'react';
 import PropTypes from 'prop-types';
-import { mount } from 'enzyme';
-import { MemoryRouter as Router, Route } from 'react-router';
+import { render, screen } from '@testing-library/react';
+import { MemoryRouter as Router, Route, useLocation } from 'react-router';
 import useBreadcrumbs, { getBreadcrumbs, createRoutesFromChildren } from './index.tsx';
 
 // imports to test compiled builds
@@ -25,10 +26,12 @@ const components = {
     ...forwardedProps
   }) => {
     const breadcrumbs = useBreadcrumbsHook(routes, options);
+    const location = useLocation();
 
     return (
       <h1>
-        <div className="forwarded-props">
+        <span>{location.pathname}</span>
+        <div data-test-id="forwarded-props">
           {forwardedProps
             && Object.values(forwardedProps)
               .filter((v) => typeof v === 'string')
@@ -47,7 +50,7 @@ const components = {
   },
   BreadcrumbMatchTest: ({ match }) => <span>{match.params.number}</span>,
   BreadcrumbRouteTest: ({ match }) => <span>{match.route?.arbitraryProp}</span>,
-  BreadcrumbNavLinkTest: ({ match }) => <a to={match.pathname}>Link</a>,
+  BreadcrumbNavLinkTest: ({ match }) => <a role="link" to={match.pathname}>Link</a>,
   BreadcrumbLocationTest: ({
     location: {
       state: { isLocationTest },
@@ -95,10 +98,11 @@ const getMethod = () => {
   }
 };
 
-const render = ({ options, pathname, routes, state, props }) => {
+const renderer = ({ options, pathname, routes, state, props }) => {
   const useBreadcrumbsHook = getHOC();
   const { Breadcrumbs } = components;
-  const wrapper = mount(
+
+  const wrapper = render(
     <Router initialIndex={0} initialEntries={[{ pathname, state }]}>
       <Breadcrumbs
         useBreadcrumbs={useBreadcrumbsHook}
@@ -110,8 +114,6 @@ const render = ({ options, pathname, routes, state, props }) => {
   );
 
   return {
-    breadcrumbs: wrapper.find('.breadcrumbs-container').text(),
-    forwardedProps: wrapper.find('.forwarded-props').text(),
     wrapper,
   };
 };
@@ -196,6 +198,15 @@ components.Layout.defaultProps = {
   children: null,
 };
 
+const getByTextContent = (text) => screen.getByText((content, element) => {
+  const hasText = (ele) => ele.textContent === text;
+  const elementHasText = hasText(element);
+  const childrenDontHaveText = (element?.children ? Array.from(element.children) : [])
+    .every((child) => !hasText(child));
+
+  return elementHasText && childrenDontHaveText;
+});
+
 describe('use-react-router-breadcrumbs', () => {
   describe('Valid routes', () => {
     it('Should render breadcrumb components as expected', () => {
@@ -216,12 +227,12 @@ describe('use-react-router-breadcrumbs', () => {
         // test a `*` route
         { path: '*', breadcrumb: 'Any' },
       ];
-      const { breadcrumbs, wrapper } = render({
+      renderer({
         pathname: '/1/2/3/4/5',
         routes,
       });
-      expect(breadcrumbs).toBe('Home / One / TWO / 3 / Link / Any');
-      expect(wrapper.find('a').props().to).toBe('/1/2/3/4');
+      expect(getByTextContent('Home / One / TWO / 3 / Link / Any')).toBeTruthy();
+      expect(screen.getByRole('link')).toHaveAttribute('to', '/1/2/3/4');
     });
   });
 
@@ -234,8 +245,8 @@ describe('use-react-router-breadcrumbs', () => {
         { path: '/user/:id', breadcrumb: '1' },
         { path: '/user/create', breadcrumb: 'Add User' },
       ];
-      const { breadcrumbs } = render({ pathname: '/user/create', routes });
-      expect(breadcrumbs).toBe('Root / User / Add User');
+      renderer({ pathname: '/user/create', routes });
+      expect(getByTextContent('Root / User / Add User')).toBeTruthy();
     });
 
     it('Should match the correct breadcrumb in route if they have the same score', () => {
@@ -258,8 +269,8 @@ describe('use-react-router-breadcrumbs', () => {
           breadcrumb: 'Last Create',
         },
       ];
-      const { breadcrumbs } = render({ pathname: '/user/create/x', routes });
-      expect(breadcrumbs).toBe('Home / User / First Create / World');
+      renderer({ pathname: '/user/create/x', routes });
+      expect(getByTextContent('Home / User / First Create / World')).toBeTruthy();
     });
   });
 
@@ -268,16 +279,16 @@ describe('use-react-router-breadcrumbs', () => {
       const routes = [
         { path: '/memo', breadcrumb: components.BreadcrumbMemoized },
       ];
-      const { breadcrumbs } = render({ pathname: '/memo', routes });
-      expect(breadcrumbs).toBe('Home / Memoized');
+      renderer({ pathname: '/memo', routes });
+      expect(getByTextContent('Home / Memoized')).toBeTruthy();
     });
 
     it('Should render class components', () => {
       const routes = [
         { path: '/class', breadcrumb: components.BreadcrumbClass },
       ];
-      const { breadcrumbs } = render({ pathname: '/class', routes });
-      expect(breadcrumbs).toBe('Home / Class');
+      renderer({ pathname: '/class', routes });
+      expect(getByTextContent('Home / Class')).toBeTruthy();
     });
   });
 
@@ -290,8 +301,8 @@ describe('use-react-router-breadcrumbs', () => {
           caseSensitive: true,
         },
       ];
-      const { breadcrumbs } = render({ pathname: '/OnE', routes });
-      expect(breadcrumbs).toBe('Home / OnE');
+      renderer({ pathname: '/OnE', routes });
+      expect(getByTextContent('Home / OnE')).toBeTruthy();
     });
   });
 
@@ -301,8 +312,8 @@ describe('use-react-router-breadcrumbs', () => {
         { path: '/one', breadcrumb: 'OneCustom' },
         { path: '/one/two' },
       ];
-      const { breadcrumbs } = render({ pathname: '/one/two', routes });
-      expect(breadcrumbs).toBe('Home / OneCustom / Two');
+      renderer({ pathname: '/one/two', routes });
+      expect(getByTextContent('Home / OneCustom / Two')).toBeTruthy();
     });
 
     it('Should support nested routes', () => {
@@ -318,8 +329,8 @@ describe('use-react-router-breadcrumbs', () => {
           ],
         },
       ];
-      const { breadcrumbs } = render({ pathname: '/one/two/three', routes });
-      expect(breadcrumbs).toBe('Home / One / TwoCustom / ThreeCustom');
+      renderer({ pathname: '/one/two/three', routes });
+      expect(getByTextContent('Home / One / TwoCustom / ThreeCustom')).toBeTruthy();
     });
 
     it('Should support nested routes with relative path', () => {
@@ -335,8 +346,8 @@ describe('use-react-router-breadcrumbs', () => {
           ],
         },
       ];
-      const { breadcrumbs } = render({ pathname: '/one/two/three', routes });
-      expect(breadcrumbs).toBe('Home / One / TwoCustom / ThreeCustom');
+      renderer({ pathname: '/one/two/three', routes });
+      expect(getByTextContent('Home / One / TwoCustom / ThreeCustom')).toBeTruthy();
     });
 
     it('Should allow layout routes', () => {
@@ -355,8 +366,8 @@ describe('use-react-router-breadcrumbs', () => {
           breadcrumb: 'Home',
         },
       ];
-      const { breadcrumbs } = render({ pathname: '/about', routes });
-      expect(breadcrumbs).toBe('Home / About');
+      renderer({ pathname: '/about', routes });
+      expect(getByTextContent('Home / About')).toBeTruthy();
     });
 
     it('Should allow layout routes for declarative routes', () => {
@@ -370,8 +381,8 @@ describe('use-react-router-breadcrumbs', () => {
         </>
       );
       const routeObject = createRoutesFromChildren(DeclarativeRoutes);
-      const { breadcrumbs } = render({ pathname: '/about', routes: routeObject });
-      expect(breadcrumbs).toBe('Home / About');
+      renderer({ pathname: '/about', routes: routeObject });
+      expect(getByTextContent('Home / About')).toBeTruthy();
     });
 
     it('Should throw if non route is used in Routes object', () => {
@@ -389,8 +400,8 @@ describe('use-react-router-breadcrumbs', () => {
           children: [{ index: true }],
         },
       ];
-      const { breadcrumbs } = render({ pathname: '/one', routes });
-      expect(breadcrumbs).toBe('Home / Parent');
+      renderer({ pathname: '/one', routes });
+      expect(getByTextContent('Home / Parent')).toBeTruthy();
     });
 
     it('Should use the default breadcrumb If neither the index route nor the parent route provide breadcrumb', () => {
@@ -400,71 +411,67 @@ describe('use-react-router-breadcrumbs', () => {
           children: [{ index: true }],
         },
       ];
-      const { breadcrumbs } = render({ pathname: '/one', routes });
-      expect(breadcrumbs).toBe('Home / One');
+      renderer({ pathname: '/one', routes });
+      expect(getByTextContent('Home / One')).toBeTruthy();
     });
   });
 
   describe('Defaults', () => {
     describe('No routes array', () => {
-      it('Should automatically render breadcrumbs with default strings', () => {
-        const { breadcrumbs } = render({ pathname: '/one/two' });
-
-        expect(breadcrumbs).toBe('Home / One / Two');
+      it('Should automatically renderer breadcrumbs with default strings', () => {
+        renderer({ pathname: '/one/two' });
+        expect(getByTextContent('Home / One / Two')).toBeTruthy();
       });
     });
 
     describe('Override defaults', () => {
       it('Should render user-provided breadcrumbs where possible and use defaults otherwise', () => {
         const routes = [{ path: '/one', breadcrumb: 'Override' }];
-        const { breadcrumbs } = render({ pathname: '/one/two', routes });
-
-        expect(breadcrumbs).toBe('Home / Override / Two');
+        renderer({ pathname: '/one/two', routes });
+        expect(getByTextContent('Home / Override / Two')).toBeTruthy();
       });
     });
 
     describe('No breadcrumb', () => {
-      it('Should be possible to NOT render a breadcrumb', () => {
+      it('Should be possible to NOT renderer a breadcrumb', () => {
         const routes = [{ path: '/one', breadcrumb: null }];
-        const { breadcrumbs } = render({ pathname: '/one/two', routes });
-
-        expect(breadcrumbs).toBe('Home / Two');
+        renderer({ pathname: '/one/two', routes });
+        expect(getByTextContent('Home / Two')).toBeTruthy();
       });
 
-      it('Should be possible to NOT render a "Home" breadcrumb', () => {
+      it('Should be possible to NOT renderer a "Home" breadcrumb', () => {
         const routes = [{ path: '/', breadcrumb: null }];
-        const { breadcrumbs } = render({ pathname: '/one/two', routes });
-
-        expect(breadcrumbs).toBe('One / Two');
+        renderer({ pathname: '/one/two', routes });
+        expect(getByTextContent('One / Two')).toBeTruthy();
       });
     });
   });
 
   describe('When using the location object', () => {
-    it('Should be provided in the rendered breadcrumb component', () => {
+    it('Should be provided in the renderered breadcrumb component', () => {
       const routes = [
         { path: '/one', breadcrumb: components.BreadcrumbLocationTest },
       ];
-      const { breadcrumbs } = render({
+      renderer({
         pathname: '/one',
         state: { isLocationTest: true },
         routes,
       });
-      expect(breadcrumbs).toBe('Home / pass');
+      expect(getByTextContent('Home / pass')).toBeTruthy();
     });
   });
 
   describe('When pathname includes query params', () => {
-    it('Should not render query breadcrumb', () => {
-      const { breadcrumbs } = render({ pathname: '/one?mock=query' });
-      expect(breadcrumbs).toBe('Home / One');
+    it('Should not renderer query breadcrumb', () => {
+      renderer({ pathname: '/one?mock=query' });
+      expect(getByTextContent('Home / One')).toBeTruthy();
     });
   });
 
   describe('When pathname includes a trailing slash', () => {
     it('Should ignore the trailing slash', () => {
-      const { breadcrumbs } = render({ pathname: '/one/' });
-      expect(breadcrumbs).toBe('Home / One');
+      renderer({ pathname: '/one/' });
+      expect(getByTextContent('Home / One')).toBeTruthy();
     });
   });
 
@@ -480,8 +487,8 @@ describe('use-react-router-breadcrumbs', () => {
           },
         },
       ];
-      const { breadcrumbs } = render({ pathname: '/one', routes });
-      expect(breadcrumbs).toBe('Home / Pass through props');
+      renderer({ pathname: '/one', routes });
+      expect(getByTextContent('Home / Pass through props')).toBeTruthy();
     });
   });
 
@@ -495,19 +502,19 @@ describe('use-react-router-breadcrumbs', () => {
         },
       ];
 
-      const { breadcrumbs } = render({ pathname: '/one', routes });
-      expect(breadcrumbs).toBe('Home / foobar');
+      renderer({ pathname: '/one', routes });
+      expect(getByTextContent('Home / foobar')).toBeTruthy();
     });
   });
 
   describe('Options', () => {
     describe('excludePaths', () => {
       it('Should not return breadcrumbs for specified paths', () => {
-        const { breadcrumbs } = render({
+        renderer({
           pathname: '/one/two',
           options: { excludePaths: ['/', '/one'] },
         });
-        expect(breadcrumbs).toBe('Two');
+        expect(getByTextContent('Two')).toBeTruthy();
       });
 
       it('Should work with url params', () => {
@@ -516,23 +523,23 @@ describe('use-react-router-breadcrumbs', () => {
           { path: '/a/:b' },
           { path: '/a/:b/:c' },
         ];
-        const { breadcrumbs } = render({
+        renderer({
           pathname: '/a/b/c',
           routes,
           options: { excludePaths: ['/a/:b', '/a'] },
         });
-        expect(breadcrumbs).toBe('Home / C');
+        expect(getByTextContent('Home / C')).toBeTruthy();
       });
     });
 
     describe('options without routes array', () => {
       it('Should be able to set options without defining a routes array', () => {
-        const { breadcrumbs } = render({
+        renderer({
           pathname: '/one/two',
           routes: null,
           options: { excludePaths: ['/', '/one'] },
         });
-        expect(breadcrumbs).toBe('Two');
+        expect(getByTextContent('Two')).toBeTruthy();
       });
     });
 
@@ -542,13 +549,13 @@ describe('use-react-router-breadcrumbs', () => {
           { path: '/one', breadcrumb: 'One' },
           { path: '/one/two' },
         ];
-        const { breadcrumbs } = render({
+        renderer({
           pathname: '/one/two',
           routes,
           options: { disableDefaults: true },
         });
 
-        expect(breadcrumbs).toBe('One');
+        expect(getByTextContent('One')).toBeTruthy();
       });
     });
 
@@ -559,13 +566,13 @@ describe('use-react-router-breadcrumbs', () => {
           { path: '/one/two' },
           { path: '/one/two/three_four' },
         ];
-        const { breadcrumbs } = render({
+        renderer({
           pathname: '/one/two/three_four',
           routes,
           options: { defaultFormatter: (breadcrumb) => breadcrumb.replace(/two/g, 'changed') },
         });
 
-        expect(breadcrumbs).toBe('Home / One / changed / three_four');
+        expect(getByTextContent('Home / One / changed / three_four')).toBeTruthy();
       });
     });
   });
@@ -610,25 +617,18 @@ describe('use-react-router-breadcrumbs', () => {
     });
   });
 
-  describe('DOM rendering', () => {
-    it('Should not render props as element attributes on breadcrumbs', () => {
-      const { wrapper } = render({ pathname: '/one' });
-      expect(wrapper.html()).not.toContain('[object Object]');
-    });
-  });
-
   describe('HOC prop forwarding', () => {
     it('Should allow for forwarding props to the wrapped component', () => {
       const props = { testing: 'prop forwarding works' };
-      const { forwardedProps } = render({ pathname: '/', props });
-      expect(forwardedProps).toEqual('prop forwarding works');
+      renderer({ pathname: '/', props });
+      expect(screen.getByText('prop forwarding works')).toBeTruthy();
     });
   });
 
   describe('Edge cases', () => {
     it('Should handle 2 slashes in a URL (site.com/sandwiches//tuna)', () => {
-      const { breadcrumbs } = render({ pathname: '/sandwiches//tuna' });
-      expect(breadcrumbs).toBe('Home / Sandwiches / Tuna');
+      renderer({ pathname: '/sandwiches//tuna' });
+      expect(getByTextContent('Home / Sandwiches / Tuna')).toBeTruthy();
     });
   });
 });
