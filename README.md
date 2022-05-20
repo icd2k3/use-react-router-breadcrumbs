@@ -105,7 +105,7 @@ const CustomPropsBreadcrumb = ({ someProp }) => (
 const routes = [
   { path: '/users/:userId', breadcrumb: DynamicUserBreadcrumb },
   { path: '/example', breadcrumb: 'Custom Example' },
-  { path: '/custom-props, breadcrumb: CustomPropsBreadcrumb, props: { someProp: 'Hi' }},
+  { path: '/custom-props', breadcrumb: CustomPropsBreadcrumb, props: { someProp: 'Hi' }},
 ];
 
 // map & render your breadcrumb components however you want.
