@@ -4,7 +4,7 @@ import '@testing-library/jest-dom';
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter as Router, useLocation } from 'react-router-dom';
-import useBreadcrumbs, { getBreadcrumbs, createRoutesFromChildren, BreadcrumbsRoute, Route, Options } from './index';
+import useBreadcrumbs, { getBreadcrumbs, createRoutesFromChildren, BreadcrumbsRoute, Route, Options, BreadcrumbComponentProps } from './index';
 
 // imports to test compiled builds
 import useBreadcrumbsCompiledES, {
@@ -18,6 +18,11 @@ import useBreadcrumbsCompiledUMD, {
 import useBreadcrumbsCompiledCJS, {
   getBreadcrumbs as getBreadcrumbsCompiledCJS,
 } from '../dist/cjs/index';
+
+interface ExtraPropsTest extends BreadcrumbComponentProps {
+  foo: string;
+  bar: string;
+}
 
 const components = {
   Breadcrumbs: ({
@@ -69,23 +74,23 @@ const components = {
 
   BreadcrumbLocationTest: ({
     location,
-  }: {
-    location?: {
-      state?: { isLocationTest?: boolean }
-    }
-  }) => <span>{location?.state?.isLocationTest ? 'pass' : 'fail'}</span>,
+  }: BreadcrumbComponentProps) => (
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    <span>{location?.state?.isLocationTest ? 'pass' : 'fail'}</span>
+  ),
 
-  BreadcrumbExtraPropsTest: ({ foo, bar }: { foo: string, bar: string }) => (
-    <span>
-      {foo}
-      {bar}
-    </span>
+  BreadcrumbExtraPropsTest: (props: ExtraPropsTest) => (
+    <>
+      <span>{props.foo}</span>
+      <span>{props.bar}</span>
+    </>
   ),
 
   BreadcrumbMemoized: React.memo(() => <span>Memoized</span>),
 
   // eslint-disable-next-line react/prefer-stateless-function
-  BreadcrumbClass: class BreadcrumbClass extends React.PureComponent {
+  BreadcrumbClass: class BreadcrumbClass extends React.PureComponent<BreadcrumbComponentProps> {
     render() {
       return <span>Class</span>;
     }
@@ -457,6 +462,8 @@ describe('use-react-router-breadcrumbs', () => {
         },
       ];
 
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore arbitrary prop is not expected, but should not error
       renderer({ pathname: '/one', routes });
       expect(getByTextContent('Home / foobar')).toBeTruthy();
     });
