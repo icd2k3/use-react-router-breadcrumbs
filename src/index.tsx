@@ -23,14 +23,22 @@ import {
   useLocation,
   RouteObject,
   Params,
-  PathPattern,
   Route,
   PathRouteProps,
   LayoutRouteProps,
   IndexRouteProps,
-} from 'react-router';
+} from 'react-router-dom';
 
 type Location = ReturnType<typeof useLocation>;
+
+/**
+ * This type interface is copied in directly from react-router (react-router-dom does not export it)
+ */
+interface PathPattern<Path extends string = string> {
+  path: Path;
+  caseSensitive?: boolean;
+  end?: boolean;
+}
 
 export interface Options {
   disableDefaults?: boolean;
@@ -61,6 +69,7 @@ export interface BreadcrumbComponentProps<ParamKey extends string = string> {
   key: string;
   match: BreadcrumbMatch<ParamKey>;
   location: Location;
+  [x: string]: unknown;
 }
 
 export type BreadcrumbComponentType<ParamKey extends string = string> =

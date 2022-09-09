@@ -6897,7 +6897,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-router@npm:^6.3.0":
+"react-router-dom@npm:^6.3.0":
+  version: 6.3.0
+  resolution: "react-router-dom@npm:6.3.0"
+  dependencies:
+    history: ^5.2.0
+    react-router: 6.3.0
+  peerDependencies:
+    react: ">=16.8"
+    react-dom: ">=16.8"
+  checksum: 77603a654f8a8dc7f65535a2e5917a65f8d9ffcb06546d28dd297e52adcc4b8a84377e0115f48dca330b080af2da3e78f29d590c89307094d36927d2b1751ec3
+  languageName: node
+  linkType: hard
+
+"react-router@npm:6.3.0":
   version: 6.3.0
   resolution: "react-router@npm:6.3.0"
   dependencies:
@@ -8116,14 +8129,14 @@ __metadata:
     pinst: ^3.0.0
     react: ^18.2.0
     react-dom: ^18.2.0
-    react-router: ^6.3.0
+    react-router-dom: ^6.3.0
     rollup: ^2.79.0
     rollup-plugin-size: ^0.2.2
     rollup-plugin-terser: ^7.0.2
     typescript: ^4.8.3
   peerDependencies:
     react: ">=16.8"
-    react-router: ">=6.0.0"
+    react-router-dom: ">=6.0.0"
   languageName: unknown
   linkType: soft
 
