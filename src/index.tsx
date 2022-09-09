@@ -69,6 +69,7 @@ export interface BreadcrumbComponentProps<ParamKey extends string = string> {
   key: string;
   match: BreadcrumbMatch<ParamKey>;
   location: Location;
+  [x: string]: unknown;
 }
 
 export type BreadcrumbComponentType<ParamKey extends string = string> =

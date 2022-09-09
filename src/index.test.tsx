@@ -20,8 +20,8 @@ import useBreadcrumbsCompiledCJS, {
 } from '../dist/cjs/index';
 
 interface ExtraPropsTest extends BreadcrumbComponentProps {
-  foo: string;
-  bar: string;
+  foo?: string;
+  bar?: string;
 }
 
 const components = {
