@@ -3,7 +3,7 @@
 import '@testing-library/jest-dom';
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { MemoryRouter as Router, useLocation } from 'react-router';
+import { MemoryRouter as Router, useLocation } from 'react-router-dom';
 import useBreadcrumbs, { getBreadcrumbs, createRoutesFromChildren, BreadcrumbsRoute, Route, Options } from './index';
 
 // imports to test compiled builds

@@ -1,6 +1,6 @@
 {
   "name": "use-react-router-breadcrumbs",
-  "version": "3.2.1",
+  "version": "4.0.0",
   "description": "A hook for displaying and setting breadcrumbs for react router",
   "main": "dist/cjs/index.js",
   "module": "dist/es/index.js",
@@ -11,7 +11,7 @@
   "types": "dist/index.d.ts",
   "peerDependencies": {
     "react": ">=16.8",
-    "react-router": ">=6.0.0"
+    "react-router-dom": ">=6.0.0"
   },
   "scripts": {
     "prepublishOnly": "yarn build && pinst --disable",
@@ -55,7 +55,7 @@
     "pinst": "^3.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router": "^6.3.0",
+    "react-router-dom": "^6.3.0",
     "rollup": "^2.79.0",
     "rollup-plugin-size": "^0.2.2",
     "rollup-plugin-terser": "^7.0.2",
