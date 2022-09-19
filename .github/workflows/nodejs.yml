@@ -20,33 +20,15 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
-    - name: yarn install
-      uses: borales/actions-yarn@v2.1.0
-      with:
-        cmd: install
-    - name: yarn build
-      uses: borales/actions-yarn@v2.1.0
-      with:
-        cmd: build
-    - name: yarn lint
-      uses: borales/actions-yarn@v2.1.0
-      with:
-        cmd: lint
-    - name: yarn types
-      uses: borales/actions-yarn@v2.1.0
-      with:
-        cmd: types
-    - name: yarn test
-      uses: borales/actions-yarn@v2.1.0
-      with:
-        cmd: test
-    - name: yarn test-build
-      uses: borales/actions-yarn@v2.1.0
-      with:
-        cmd: test-build
+    - run: npm ci
+    - run: npm run types
+    - run: npm run lint
+    - run: npm run build --if-present
+    - run: npm run test
+    - run: npm run test-build
     - name: Coveralls
       uses: coverallsapp/github-action@master
       with:

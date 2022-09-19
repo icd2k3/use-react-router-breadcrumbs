@@ -6,8 +6,6 @@
 .husky/
 .npmignore
 .nvmrc
-.yarn/
-.yarnrc.yml
 CONTRIBUTING.md
 MIGRATIONS.md
 babel.config.js
@@ -20,5 +18,3 @@ rollup.config.js
 scripts/
 src/
 tsconfig.json
-yarn-error.log
-yarn.lock

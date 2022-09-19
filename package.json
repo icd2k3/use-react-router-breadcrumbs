@@ -14,8 +14,8 @@
     "react-router-dom": ">=6.0.0"
   },
   "scripts": {
-    "prepublishOnly": "yarn build && pinst --disable",
-    "build": "rollup -c && yarn type-declarations",
+    "prepublishOnly": "npm run build && pinst --disable",
+    "build": "rollup -c && npm run type-declarations",
     "test": "jest",
     "test-build": "sh ./scripts/test-build.sh",
     "types": "tsc -p tsconfig.json --noEmit",
