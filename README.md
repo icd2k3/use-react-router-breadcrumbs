@@ -27,8 +27,9 @@
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
 - [Description](#description)
-    - [Features](#features)
+  - [Features](#features)
 - [Install](#install)
 - [Usage](#usage)
 - [Examples](#examples)
@@ -48,6 +49,7 @@
 Render breadcrumbs for `react-router` 6 however you want!
 
 #### Features
+
 - Easy to get started with automatically generated breadcrumbs.
 - Render, map, and wrap breadcrumbs any way you want.
 - Compatible with existing [route objects](https://reactrouter.com/docs/en/v6/examples/route-objects).
@@ -63,15 +65,17 @@ or
 ## Usage
 
 ```js
-const breadcrumbs = useBreadcrumbs()
+const breadcrumbs = useBreadcrumbs();
 ```
 
 ## Examples
 
 ### Simple
+
 Start seeing generated breadcrumbs right away with this simple example
+
 ```js
-import useBreadcrumbs from 'use-react-router-breadcrumbs';
+import useBreadcrumbs from "use-react-router-breadcrumbs";
 
 const Breadcrumbs = () => {
   const breadcrumbs = useBreadcrumbs();
@@ -81,31 +85,34 @@ const Breadcrumbs = () => {
       {breadcrumbs.map(({ breadcrumb }) => breadcrumb)}
     </React.Fragment>
   );
-}
+};
 ```
 
 ### Advanced
+
 The example above will work for some routes, but you may want other routes to be dynamic (such as a user name breadcrumb). Let's modify it to handle custom-set breadcrumbs.
 
 ```js
-import useBreadcrumbs from 'use-react-router-breadcrumbs';
+import useBreadcrumbs from "use-react-router-breadcrumbs";
 
-const userNamesById = { '1': 'John' }
+const userNamesById = { 1: "John" };
 
 const DynamicUserBreadcrumb = ({ match }) => (
   <span>{userNamesById[match.params.userId]}</span>
 );
 
-const CustomPropsBreadcrumb = ({ someProp }) => (
-  <span>{someProp}</span>
-);
+const CustomPropsBreadcrumb = ({ someProp }) => <span>{someProp}</span>;
 
 // define custom breadcrumbs for certain routes.
 // breadcumbs can be components or strings.
 const routes = [
-  { path: '/users/:userId', breadcrumb: DynamicUserBreadcrumb },
-  { path: '/example', breadcrumb: 'Custom Example' },
-  { path: '/custom-props', breadcrumb: CustomPropsBreadcrumb, props: { someProp: 'Hi' }},
+  { path: "/users/:userId", breadcrumb: DynamicUserBreadcrumb },
+  { path: "/example", breadcrumb: "Custom Example" },
+  {
+    path: "/custom-props",
+    breadcrumb: CustomPropsBreadcrumb,
+    props: { someProp: "Hi" },
+  },
 ];
 
 // map & render your breadcrumb components however you want.
@@ -114,13 +121,10 @@ const Breadcrumbs = () => {
 
   return (
     <>
-      {breadcrumbs.map(({
-        match,
-        breadcrumb
-      }) => (
-        <span key={match.pathname}>
-          <NavLink to={match.pathname}>{breadcrumb}</NavLink>
-        </span>
+      {breadcrumbs.map(({ match, breadcrumb }) => (
+        <NavLink key={match.pathname} to={match.pathname}>
+          {breadcrumb}
+        </NavLink>
       ))}
     </>
   );
@@ -129,14 +133,15 @@ const Breadcrumbs = () => {
 
 For the above example...
 
-Pathname | Result
---- | ---
-/users | Home / Users
-/users/1 | Home / Users / John
-/example | Home / Custom Example
-/custom-props | Home / Hi
+| Pathname      | Result                |
+| ------------- | --------------------- |
+| /users        | Home / Users          |
+| /users/1      | Home / Users / John   |
+| /example      | Home / Custom Example |
+| /custom-props | Home / Hi             |
 
 ### Advanced (Declarative Routes)
+
 Same as the example above using Declarative Routing.
 
 ```js
@@ -205,12 +210,12 @@ const AppRouter = () => {
 
 For the above example...
 
-Pathname | Result
---- | ---
-/users | Home / Users
-/users/1 | Home / Users / John
-/example | Home / Custom Example
-/custom-props | Home / Hi
+| Pathname      | Result                |
+| ------------- | --------------------- |
+| /users        | Home / Users          |
+| /users/1      | Home / Users / John   |
+| /example      | Home / Custom Example |
+| /custom-props | Home / Hi             |
 
 ## [Route object](https://reactrouter.com/docs/en/v6/examples/route-objects) compatibility
 
@@ -222,8 +227,8 @@ For example...
 const routes = [
   {
     path: "/sandwiches",
-    element: <Sandwiches />
-  }
+    element: <Sandwiches />,
+  },
 ];
 ```
 
@@ -234,8 +239,8 @@ const routes = [
   {
     path: "/sandwiches",
     element: <Sandwiches />,
-    breadcrumb: 'I love sandwiches'
-  }
+    breadcrumb: "I love sandwiches",
+  },
 ];
 ```
 
@@ -269,23 +274,25 @@ export default connect(mapStateToProps)(PureUserBreadcrumb);
 Now we can pass this custom `redux` breadcrumb into the hook:
 
 ```js
-const breadcrumbs = useBreadcrumbs([{
-  path: '/users/:id',
-  breadcrumb: UserBreadcrumb
-}]);
+const breadcrumbs = useBreadcrumbs([
+  {
+    path: "/users/:id",
+    breadcrumb: UserBreadcrumb,
+  },
+]);
 ```
 
 You cannot use hooks that rely on `RouteContext` like `useParams`, because the breadcrumbs are not in the context, you should use `match.params` instead:
 
 ```tsx
-import type { BreadcrumbComponentType } from 'use-react-router-breadcrumbs';
+import type { BreadcrumbComponentType } from "use-react-router-breadcrumbs";
 
-const UserBreadcrumb: BreadcrumbComponentType<'id'> = ({ match }) => {
+const UserBreadcrumb: BreadcrumbComponentType<"id"> = ({ match }) => {
   return <div>{match.params.id}</div>;
-}
+};
 ```
 
-----
+---
 
 Similarly, the [location](https://reactrouter.com/docs/en/v6/api#location) object could be useful for displaying dynamic breadcrumbs based on the route's state:
 
@@ -312,10 +319,10 @@ An options object can be passed as the 2nd argument to the hook.
 useBreadcrumbs(routes, options);
 ```
 
-Option | Type | Description
---- | --- | ---
-`disableDefaults` | `Boolean` | Disables all default generated breadcrumbs. |
-`excludePaths` | `Array<String>` | Disables default generated breadcrumbs for specific paths. |
+| Option            | Type            | Description                                                |
+| ----------------- | --------------- | ---------------------------------------------------------- |
+| `disableDefaults` | `Boolean`       | Disables all default generated breadcrumbs.                |
+| `excludePaths`    | `Array<String>` | Disables default generated breadcrumbs for specific paths. |
 
 ### Disabling default generated breadcrumbs
 
@@ -324,19 +331,21 @@ This package will attempt to create breadcrumbs for you based on the route secti
 **Option 1:** Disable _all_ default breadcrumb generation by passing `disableDefaults: true` in the `options` object
 
 ```js
-const breadcrumbs = useBreadcrumbs(routes, { disableDefaults: true })
+const breadcrumbs = useBreadcrumbs(routes, { disableDefaults: true });
 ```
 
 **Option 2:** Disable _individual_ default breadcrumbs by passing `breadcrumb: null` in route config:
 
 ```js
-const routes = [{ path: '/a/b', breadcrumb: null }];
+const routes = [{ path: "/a/b", breadcrumb: null }];
 ```
 
 **Option 3:** Disable _individual_ default breadcrumbs by passing an `excludePaths` array in the `options` object
 
 ```js
-useBreadcrumbs(routes, { excludePaths: ['/', '/no-breadcrumb/for-this-route'] })
+useBreadcrumbs(routes, {
+  excludePaths: ["/", "/no-breadcrumb/for-this-route"],
+});
 ```
 
 ## Order matters!
@@ -346,13 +355,13 @@ useBreadcrumbs(routes, { excludePaths: ['/', '/no-breadcrumb/for-this-route'] })
 ```js
 [
   {
-    path: 'users',
+    path: "users",
     children: [
-      { path: ':id', breadcrumb: 'id-breadcrumb' },
-      { path: 'create', breadcrumb: 'create-breadcrumb' },
+      { path: ":id", breadcrumb: "id-breadcrumb" },
+      { path: "create", breadcrumb: "create-breadcrumb" },
     ],
   },
-]
+];
 ```
 
 If the user visits `example.com/users/create` they will see `create-breadcrumb`.
@@ -362,13 +371,11 @@ In addition, if the index route and the parent route provide breadcrumb at the s
 ```js
 [
   {
-    path: 'users',
-    breadcrumb: 'parent-breadcrumb',
-    children: [
-      { index: true, breadcrumb: 'child-breadcrumb' },
-    ],
+    path: "users",
+    breadcrumb: "parent-breadcrumb",
+    children: [{ index: true, breadcrumb: "child-breadcrumb" }],
   },
-]
+];
 ```
 
 If the user visits `example.com/users` they will see `child-breadcrumb`.
