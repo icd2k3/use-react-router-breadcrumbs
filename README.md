@@ -104,7 +104,7 @@ const DynamicUserBreadcrumb = ({ match }) => (
 const CustomPropsBreadcrumb = ({ someProp }) => <span>{someProp}</span>;
 
 // define custom breadcrumbs for certain routes.
-// breadcumbs can be components or strings.
+// breadcrumbs can be components or strings.
 const routes = [
   { path: "/users/:userId", breadcrumb: DynamicUserBreadcrumb },
   { path: "/example", breadcrumb: "Custom Example" },
@@ -158,7 +158,7 @@ const CustomPropsBreadcrumb = ({ someProp }) => (
 );
 
 // define custom breadcrumbs for certain routes.
-// breadcumbs can be components or strings.
+// breadcrumbs can be components or strings.
 
 // map & render your breadcrumb components however you want.
 const BreadcrumbTrail = ({ breadCrumbs }) => {
