@@ -3,8 +3,8 @@
 import '@testing-library/jest-dom';
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { MemoryRouter as Router, useLocation } from 'react-router-dom';
-import useBreadcrumbs, { getBreadcrumbs, createRoutesFromChildren, BreadcrumbsRoute, Route, Options, BreadcrumbComponentProps } from './index';
+import { MemoryRouter as Router, useLocation, useRoutes } from 'react-router-dom';
+import useBreadcrumbs, { getBreadcrumbs, createRoutesFromChildren, BreadcrumbsRoute, Route, Options, BreadcrumbComponentProps, BreadcrumbComponentType } from './index';
 
 // imports to test compiled builds
 import useBreadcrumbsCompiledES, {
@@ -94,6 +94,37 @@ const components = {
     render() {
       return <span>Class</span>;
     }
+  },
+
+  NestedRouteObjects: () => {
+    const usersById = { 1: 'Mike' };
+    // eslint-disable-next-line react/function-component-definition
+    const UserDetailBreadcrumb: BreadcrumbComponentType<string> = ({
+      // eslint-disable-next-line
+      match
+    }: { match: { params?: { userId?: number } } }) => (
+      // eslint-disable-next-line react/jsx-no-useless-fragment
+      <span>{match?.params?.userId ? usersById[match?.params?.userId] : 'User not found'}</span>
+    );
+    const element = useRoutes([
+      {
+        path: '/',
+        element: <span>Users</span>,
+        children: [
+          {
+            path: ':userId',
+            breadcrumb: UserDetailBreadcrumb,
+            element: <span>User</span>,
+            children: [
+              { path: 'edit', element: <span>Edit</span> },
+              { path: '*', element: <span>Wild</span> },
+            ],
+          },
+        ],
+      },
+    ] as BreadcrumbsRoute[]);
+
+    return element;
   },
 
   // eslint-disable-next-line react/require-default-props
@@ -308,6 +339,37 @@ describe('use-react-router-breadcrumbs', () => {
       ];
       renderer({ pathname: '/one/two/three', routes });
       expect(getByTextContent('Home / One / TwoCustom / ThreeCustom')).toBeTruthy();
+    });
+
+    it('Should support nested route objects within child components', () => {
+      const routes = [
+        {
+          path: '/',
+          breadcrumb: 'Home',
+          children: [
+            {
+              path: 'users/*',
+              element: <components.NestedRouteObjects />,
+            },
+            {
+              path: 'admins/*',
+              element: <components.NestedRouteObjects />,
+            },
+          ],
+        },
+      ];
+
+      renderer({ pathname: '/users', routes });
+      expect(getByTextContent('Home / Users')).toBeTruthy();
+
+      renderer({ pathname: '/users/1', routes });
+      expect(getByTextContent('Home / Users / Mike')).toBeTruthy();
+
+      renderer({ pathname: '/users/1/edit', routes });
+      expect(getByTextContent('Home / Users / Mike / Edit')).toBeTruthy();
+
+      renderer({ pathname: '/admins/1/edit', routes });
+      expect(getByTextContent('Home / Admins / Mike / Edit')).toBeTruthy();
     });
 
     it('Should allow layout routes', () => {

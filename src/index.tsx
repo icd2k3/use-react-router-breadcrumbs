@@ -176,6 +176,25 @@ function flattenRoutes(
     const path = joinPaths([parentPath, meta.relativePath]);
     const routesMeta = parentsMeta.concat(meta);
 
+    if (path.endsWith('/*')
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      && typeof route.element?.type === 'function'
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      && route.element?.type()?.props?.value?.matches[0]?.route?.children[0]?.breadcrumb) {
+      flattenRoutes(
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        route.element?.type()?.props?.value?.matches[0]?.route?.children,
+        branches,
+        routesMeta,
+        path.slice(0, -2),
+      );
+
+      return branches;
+    }
+
     if (route.children && route.children.length > 0) {
       if (route.index) {
         throw new Error('useBreadcrumbs: Index route cannot have child routes');
@@ -188,6 +207,8 @@ function flattenRoutes(
       score: computeScore(path, route.index),
       routesMeta,
     });
+
+    return branches;
   });
   return branches;
 }
