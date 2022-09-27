@@ -104,6 +104,47 @@ interface BreadcrumbsRouteBranch {
 
 const joinPaths = (paths: string[]): string => paths.join('/').replace(/\/\/+/g, '/');
 
+/**
+ * Experimental support for nested components with their own route objects and potential
+ * breadcrumbs. Currently there is not a good way to pull state from react-router so we
+ * have to resort to this hacky low-level check through the objects that make up the components.
+ */
+const getNestedElementWithBreadcrumbsConfig = (route: RouteObject) => {
+  // skip class components and other unusual types
+  if (typeof route.element === 'string'
+    || typeof route.element === 'number'
+    || typeof route.element === 'boolean'
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    || route.element?.type?.toString()?.includes('classCallCheck')) {
+    return null;
+  }
+  // normal element with possible nested route config
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  if (typeof route.element?.type === 'function'
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    && route.element?.type()?.props?.value?.matches[0]?.route?.children[0]?.breadcrumb) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    return route.element?.type()?.props?.value?.matches[0]?.route?.children;
+  }
+  // lazy-loaded element with possible nested route config
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  if (typeof route.element?.props?.children?.type === 'function'
+    && route
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+      .element?.props?.children?.type()?.props?.value?.matches[0]?.route?.children[0]?.breadcrumb) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    return route.element?.props?.children.type()?.props?.value?.matches[0]?.route?.children;
+  }
+  return null;
+};
+
 const paramRe = /^:\w+$/;
 const dynamicSegmentValue = 3;
 const indexRouteValue = 2;
@@ -176,23 +217,19 @@ function flattenRoutes(
     const path = joinPaths([parentPath, meta.relativePath]);
     const routesMeta = parentsMeta.concat(meta);
 
-    if (path.endsWith('/*')
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      && typeof route.element?.type === 'function'
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      && route.element?.type()?.props?.value?.matches[0]?.route?.children[0]?.breadcrumb) {
-      flattenRoutes(
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        route.element?.type()?.props?.value?.matches[0]?.route?.children,
-        branches,
-        routesMeta,
-        path.slice(0, -2),
-      );
+    if (path.endsWith('/*')) {
+      const componentWithNestedBreadcrumbs = getNestedElementWithBreadcrumbsConfig(route);
 
-      return branches;
+      if (componentWithNestedBreadcrumbs) {
+        flattenRoutes(
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          componentWithNestedBreadcrumbs,
+          branches,
+          routesMeta,
+          path.slice(0, -2),
+        );
+      }
     }
 
     if (route.children && route.children.length > 0) {

@@ -341,37 +341,6 @@ describe('use-react-router-breadcrumbs', () => {
       expect(getByTextContent('Home / One / TwoCustom / ThreeCustom')).toBeTruthy();
     });
 
-    it('Should support nested route objects within child components', () => {
-      const routes = [
-        {
-          path: '/',
-          breadcrumb: 'Home',
-          children: [
-            {
-              path: 'users/*',
-              element: <components.NestedRouteObjects />,
-            },
-            {
-              path: 'admins/*',
-              element: <components.NestedRouteObjects />,
-            },
-          ],
-        },
-      ];
-
-      renderer({ pathname: '/users', routes });
-      expect(getByTextContent('Home / Users')).toBeTruthy();
-
-      renderer({ pathname: '/users/1', routes });
-      expect(getByTextContent('Home / Users / Mike')).toBeTruthy();
-
-      renderer({ pathname: '/users/1/edit', routes });
-      expect(getByTextContent('Home / Users / Mike / Edit')).toBeTruthy();
-
-      renderer({ pathname: '/admins/1/edit', routes });
-      expect(getByTextContent('Home / Admins / Mike / Edit')).toBeTruthy();
-    });
-
     it('Should allow layout routes', () => {
       const routes = [
         {
@@ -597,6 +566,64 @@ describe('use-react-router-breadcrumbs', () => {
 
         expect(getByTextContent('Home / One / changed / three_four')).toBeTruthy();
       });
+    });
+  });
+
+  describe('Route objects nested in components', () => {
+    it('should support nested route objects with breadcrumbs in child components', () => {
+      const routes = [
+        {
+          path: '/',
+          breadcrumb: 'Home',
+          children: [
+            {
+              path: 'users/*',
+              element: <components.NestedRouteObjects />,
+            },
+          ],
+        },
+      ];
+
+      renderer({ pathname: '/users/1/edit', routes });
+      expect(getByTextContent('Home / Users / Mike / Edit')).toBeTruthy();
+    });
+
+    it('should support lazy loading child components with breadcrumbs', () => {
+      const routes = [
+        {
+          path: '/',
+          breadcrumb: 'Home',
+          children: [
+            {
+              path: 'users/*',
+              element: <React.Suspense><components.NestedRouteObjects /></React.Suspense>,
+            },
+          ],
+        },
+      ];
+
+      renderer({ pathname: '/users/1/edit', routes });
+      expect(getByTextContent('Home / Users / Mike / Edit')).toBeTruthy();
+    });
+
+    it('should work normally if an element has no nested route objects and is a class component', () => {
+      const routes = [
+        {
+          path: '/',
+          breadcrumb: 'Home',
+          children: [
+            {
+              path: 'users/*',
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
+              element: <components.BreadcrumbClass />,
+            },
+          ],
+        },
+      ];
+
+      renderer({ pathname: '/users/1/edit', routes });
+      expect(getByTextContent('Home / Users / 1 / Edit')).toBeTruthy();
     });
   });
 
