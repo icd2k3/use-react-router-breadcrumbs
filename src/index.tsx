@@ -75,12 +75,11 @@ export interface BreadcrumbComponentProps<ParamKey extends string = string> {
 export type BreadcrumbComponentType<ParamKey extends string = string> =
   React.ComponentType<BreadcrumbComponentProps<ParamKey>>;
 
-export interface BreadcrumbsRoute<ParamKey extends string = string>
-  extends RouteObject {
+export type BreadcrumbsRoute<ParamKey extends string = string> = RouteObject & {
   children?: BreadcrumbsRoute[];
   breadcrumb?: BreadcrumbComponentType<ParamKey> | string | null;
   props?: { [x: string]: unknown };
-}
+};
 
 export interface BreadcrumbData<ParamKey extends string = string> {
   match: BreadcrumbMatch<ParamKey>;
