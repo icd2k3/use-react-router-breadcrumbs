@@ -1,3 +1,6 @@
+# Important
+As of `react-router v6.4` there is an [officially supported way](https://reactrouter.com/en/main/hooks/use-matches#breadcrumbs) of producing breadcrumbs. I recommend using this approach, but if it doesn't cover your specific use case, please let us know in the issues.
+
 <h3 align="center">
   use-react-router-breadcrumbs
 </h3>
