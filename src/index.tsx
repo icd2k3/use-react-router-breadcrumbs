@@ -527,7 +527,7 @@ export function createRoutesFromChildren(
 type BreadCrumb = { breadcrumb?: string | ((param: any) => JSX.Element) | JSX.Element | null };
 
 type BreadCrumbRouteType = (
-  _props: PathRouteProps | LayoutRouteProps | IndexRouteProps & BreadCrumb
+  _props: (PathRouteProps | LayoutRouteProps | IndexRouteProps) & BreadCrumb
 ) => React.ReactElement | null;
 
 const BreadCrumbRoute: BreadCrumbRouteType = Route;
