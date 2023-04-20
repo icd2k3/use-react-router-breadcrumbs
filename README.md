@@ -61,7 +61,7 @@ Render breadcrumbs for `react-router` 6 however you want!
 
 - Easy to get started with automatically generated breadcrumbs.
 - Render, map, and wrap breadcrumbs any way you want.
-- Compatible with existing [route objects](https://reactrouter.com/docs/en/v6/examples/route-objects).
+- Compatible with existing [route objects](https://github.com/remix-run/react-router/tree/main/examples/route-objects).
 
 ## Install
 
@@ -226,9 +226,9 @@ For the above example...
 | /example      | Home / Custom Example |
 | /custom-props | Home / Hi             |
 
-## [Route object](https://reactrouter.com/docs/en/v6/examples/route-objects) compatibility
+## [Route object](https://github.com/remix-run/react-router/tree/main/examples/route-objects) compatibility
 
-Add breadcrumbs to your existing [route object](https://reactrouter.com/docs/en/v6/examples/route-objects). This is a great way to keep all routing config paths in a single place! If a path ever changes, you'll only have to change it in your main route config rather than maintaining a _separate_ config for `use-react-router-breadcrumbs`.
+Add breadcrumbs to your existing [route object](https://github.com/remix-run/react-router/tree/main/examples/route-objects). This is a great way to keep all routing config paths in a single place! If a path ever changes, you'll only have to change it in your main route config rather than maintaining a _separate_ config for `use-react-router-breadcrumbs`.
 
 For example...
 
